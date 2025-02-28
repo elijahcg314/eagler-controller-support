@@ -307,6 +307,10 @@
 
             var coefficient = lerp(1.5, 15, ModAPI.settings.mouseSensitivity);
 
+            if (ModAPI.settings.invertMouse) {
+                coefficient *= -1;
+            }
+
             ModAPI.player.rotationYaw += gamepad.axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
             ModAPI.player.rotationPitch += gamepad.axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
         } else {
