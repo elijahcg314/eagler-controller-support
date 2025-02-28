@@ -283,8 +283,8 @@
         return true;
     }
     function gamepadLoop() {
-        const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0) || 10;
-        const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0) || 11;
+        const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
+        const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0);
         const STICK_LOOK = getStickData(Math.max(lookingBind.keyCode - STICK_CONSTANT, 0) || 0);
         if (CURRENT_KMAP_PROFILE !== PROFILE_CONTROLLER) {
             return;
