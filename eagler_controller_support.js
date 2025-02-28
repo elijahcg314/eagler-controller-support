@@ -59,6 +59,14 @@
     }
 
     function positionCursor() {
+        // min constraint (top - left)
+        CURSOR_POS.x = Math.max(0, CURSOR_POS.x);
+        CURSOR_POS.y = Math.max(0, CURSOR_POS.y);
+
+        // max constraight (bottom - right)
+        CURSOR_POS.x = Math.min(window.innerWidth, CURSOR_POS.x);
+        CURSOR_POS.y = Math.min(window.innerHeight, CURSOR_POS.y);
+
         GAMEPAD_CURSOR.style.left = CURSOR_POS.x + "px";
         GAMEPAD_CURSOR.style.top = CURSOR_POS.y + "px";
     }
