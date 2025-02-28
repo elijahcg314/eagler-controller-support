@@ -313,7 +313,7 @@
 
             ModAPI.player.rotationYaw += gamepad.axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
             ModAPI.player.rotationPitch += gamepad.axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
-        } else {
+        } else if (!isGuiControls(ModAPI.mc.currentScreen?.getRef()) || !ModAPI.mc.currentScreen?.buttonId) {
             GAMEPAD_CURSOR.style.display = "block";
 
             var coefficient = lerp(7.5, 30, ModAPI.settings.mouseSensitivity);
