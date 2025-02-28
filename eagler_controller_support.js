@@ -16,6 +16,7 @@
     const CONTROLLER_CONSTANT = 0x3000;
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
+    const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
     const eaglerCanvas = document.querySelector("._eaglercraftX_canvas_element");
@@ -333,6 +334,9 @@
 
                 stickY += -1 * dpad[0];
                 stickY += 1 * dpad[1];
+
+                stickX *= DPAD_SPEED;
+                stcY *= DPAD_SPEED;
             }
 
             CURSOR_POS.x += stickX * coefficient;
