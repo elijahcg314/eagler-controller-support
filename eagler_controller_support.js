@@ -533,6 +533,7 @@
             }
             gamepadLoop();
         }
+        simulateMouseEvent("mouseup");
         GAMEPAD_CURSOR.style.display = "none";
     }
     var KEYBOARD_BUTTON = null;
