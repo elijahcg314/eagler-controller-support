@@ -253,6 +253,8 @@
         if (shiftClickBind.pressed && (shiftClickBind.pressTime <= 1) && ModAPI.mc.currentScreen) {
             triggerShiftClick();
         }
+        delayFunctionQueue.forEach((x)=>x());
+        delayFunctionQueue = [];
     });
     var stateMap = [];
     var stateMapAxes = [];
@@ -271,16 +273,21 @@
     }
     const EnumChatFormatting = ModAPI.reflect.getClassByName("EnumChatFormatting");
     const RED = EnumChatFormatting.staticVariables.RED;
+    var delayFunctionQueue = [];
     function processSpecialKeys(kb) {
         if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.attack") && (ModAPI.mc.leftClickCounter <= 0)) {
-            ModAPI.mc.leftClickCounter = 1 + (5*(ModAPI.player?.capabilities?.isCreativeMode || 0));
-            return false;
+            delayFunctionQueue.push(()=>{
+                ModAPI.mc.leftClickCounter = 1 + (5*(ModAPI.player?.capabilities?.isCreativeMode || 0));
+            });
+            return true;
         }
         if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
-            ModAPI.mc.rightClickDelayTimer = 4;
-            return false;
+            delayFunctionQueue.push(()=>{
+                ModAPI.mc.rightClickDelayTimer = 4;
+            });
+            return true;
         }
-        return true;
+        return false;
     }
     function gamepadLoop() {
         const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
@@ -371,7 +378,7 @@
                 var pressed = Math.abs(gamepad.axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
                 kb.pressed = pressed * 1;
                 if (pressed) {
-                    if (processSpecialKeys(kb)) {
+                    if (!processSpecialKeys(kb)) {
                         return;
                     }
                     kb.pressTime += canTick;
@@ -385,7 +392,7 @@
                 if (gamepad.buttons[keyCode]) {
                     kb.pressed = gamepad.buttons[keyCode].pressed * 1;
                     if (gamepad.buttons[keyCode].pressed) {
-                        if (processSpecialKeys(kb)) {
+                        if (!processSpecialKeys(kb)) {
                             return;
                         }
                         kb.pressTime += canTick;
