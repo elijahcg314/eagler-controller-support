@@ -318,8 +318,25 @@
 
             var coefficient = lerp(7.5, 30, ModAPI.settings.mouseSensitivity);
 
-            CURSOR_POS.x += gamepad.axes[0] * coefficient;
-            CURSOR_POS.y += gamepad.axes[1] * coefficient;
+            var stickX = gamepad.axes[0];
+            var stickY = gamepad.axes[1];
+
+            // up - down - left - right
+            var dpad = [12, 13, 14, 15].map(k => gamepad.buttons[k].pressed);
+
+            if (dpad.reduce((acc, v)=>acc||v)) {
+                stickX = 0;
+                stickY = 0;
+
+                stickX += -1 * dpad[2];
+                stickX += 1 * dpad[3];
+
+                stickY += -1 * dpad[0];
+                stickY += 1 * dpad[1];
+            }
+
+            CURSOR_POS.x += stickX * coefficient;
+            CURSOR_POS.y += stickY * coefficient;
             positionCursor();
             simulateMouseEvent("mousemove");
         }
