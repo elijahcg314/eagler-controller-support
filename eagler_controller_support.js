@@ -478,6 +478,9 @@
         if (keyCode >= STICK_CONSTANT) {
             return ModAPI.util.str(getStickData(keyCode - STICK_CONSTANT).name);
         }
+        if (keyCode === 0) {
+            return ModAPI.util.str("(none)");
+        }
         return ModAPI.util.str(getButtonName(keyCode - CONTROLLER_CONSTANT));
     }
 
