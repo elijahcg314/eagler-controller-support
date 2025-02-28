@@ -34,7 +34,7 @@
     top: 0px;
     left: 0px;
     z-index: 999;
-    transform: translateY(3px) scale(2);
+    transform: translate(-8px, -9px) scale(2);
     user-select: none;
     display: none;
     pointer-events: none;
