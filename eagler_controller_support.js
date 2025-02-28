@@ -336,7 +336,7 @@
                 stickY += 1 * dpad[1];
 
                 stickX *= DPAD_SPEED;
-                stcY *= DPAD_SPEED;
+                stickY *= DPAD_SPEED;
             }
 
             CURSOR_POS.x += stickX * coefficient;
