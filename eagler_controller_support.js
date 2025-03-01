@@ -16,8 +16,7 @@
     const CONTROLLER_CONSTANT = 0x3000;
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
-    const STICK_DRIFT_SUPPRESSION = 0.05;
-    const STICK_DRIFT_SUPPRESSION_FN = (x => (Math.abs(x) > STICK_DRIFT_SUPPRESSION) ? x : 0);
+    const STICK_DRIFT_SUPPRESSION_FN = (x => (Math.abs(x) > (ModAPI.settings.touchControlOpacity * 0.45)) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
@@ -142,6 +141,7 @@
         });
         localStorage.setItem("eagX.controlmap." + profile, JSON.stringify(out));
         localStorage.setItem("eagX.controlmap.sens." + profile, ModAPI.settings.mouseSensitivity);
+        localStorage.setItem("eagX.controlmap.tc." + profile, ModAPI.settings.touchControlOpacity);
     }
 
     function deserialiseKeybindingList(profile) {
@@ -156,8 +156,13 @@
                 kb.keyCode = keybinding;
             }
         });
+
         if (parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile))) {
             ModAPI.settings.mouseSensitivity = parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile));
+        }
+
+        if (parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile))) {
+            ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
         }
 
         if (isGuiControls(ModAPI.mc.currentScreen?.getRef())) {
@@ -166,6 +171,11 @@
                     slider = slider.getCorrective();
                     if (ModAPI.util.ustr(slider.options.enumString.getRef()) === "options.sensitivity") {
                         slider.sliderValue = ModAPI.settings.mouseSensitivity;
+                        slider.displayString = ModAPI.mc.gameSettings.getKeyBinding(slider.options.getRef()).getRef();
+                    }
+
+                    if (ModAPI.util.ustr(slider.options.enumString.getRef()) === "options.touchControlOpacity") {
+                        slider.sliderValue = ModAPI.settings.touchControlOpacity;
                         slider.displayString = ModAPI.mc.gameSettings.getKeyBinding(slider.options.getRef()).getRef();
                     }
                 }
@@ -261,10 +271,10 @@
     var stateMap = [];
     var stateMapAxes = [];
     function updateStateMap() {
-        var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
         if (!gamepad) {
             return;
         }
+        var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
         if (stateMap.length !== gamepad.buttons.length) {
             stateMap = (new Array(gamepad.buttons.length)).fill(false);
         }
@@ -515,6 +525,20 @@
             return ModAPI.util.str("(none)");
         }
         return ModAPI.util.str(getButtonName(keyCode - CONTROLLER_CONSTANT));
+    }
+
+    const oldGetSliderTextString = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyBinding")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyBinding")] = function ($this, option) {
+        console.log(option);
+        if (!option) {
+            return oldGetSliderTextString.apply(this, [$this, option]);
+        }
+        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
+        if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
+            var value = ModAPI.settings.getOptionFloatValue(option);
+            return ModAPI.util.str("Stick Drift Suppression: " + (value * 100).toFixed(0) + "%");
+        }
+        return oldGetSliderTextString.apply(this, [$this, option]);
     }
 
     const oldInitGui = ModAPI.hooks.methods["nmcg_GuiControls_initGui"];
