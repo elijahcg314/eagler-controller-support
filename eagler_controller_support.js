@@ -16,6 +16,8 @@
     const CONTROLLER_CONSTANT = 0x3000;
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
+    const STICK_DRIFT_SUPPRESSION = 0.05;
+    const STICK_DRIFT_SUPPRESSION_FN = (x => (Math.abs(x) > STICK_DRIFT_SUPPRESSION) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
@@ -259,17 +261,18 @@
     var stateMap = [];
     var stateMapAxes = [];
     function updateStateMap() {
+        var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
         if (!gamepad) {
             return;
         }
         if (stateMap.length !== gamepad.buttons.length) {
             stateMap = (new Array(gamepad.buttons.length)).fill(false);
         }
-        if (stateMapAxes.length !== gamepad.axes.length) {
-            stateMapAxes = (new Array(gamepad.axes.length)).fill(false);
+        if (stateMapAxes.length !== axes.length) {
+            stateMapAxes = (new Array(axes.length)).fill(false);
         }
         stateMap = gamepad.buttons.map(x => x.pressed);
-        stateMapAxes = gamepad.axes.map(x => Math.abs(x) > STICK_PRESS_SENSITIVITY);
+        stateMapAxes = axes.map(x => Math.abs(x) > STICK_PRESS_SENSITIVITY);
     }
     const EnumChatFormatting = ModAPI.reflect.getClassByName("EnumChatFormatting");
     const RED = EnumChatFormatting.staticVariables.RED;
@@ -310,6 +313,8 @@
             return requestAnimationFrame(gamepadLoop);
         }
 
+        var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
+
         if (ModAPI.player && !ModAPI.mc.currentScreen) {
             GAMEPAD_CURSOR.style.display = "none";
 
@@ -319,15 +324,15 @@
                 coefficient *= -1;
             }
 
-            ModAPI.player.rotationYaw += gamepad.axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
-            ModAPI.player.rotationPitch += gamepad.axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
+            ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
+            ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
         } else if (!isGuiControls(ModAPI.mc.currentScreen?.getRef()) || !ModAPI.mc.currentScreen?.buttonId) {
             GAMEPAD_CURSOR.style.display = "block";
 
             var coefficient = lerp(7.5, 30, ModAPI.settings.mouseSensitivity);
 
-            var stickX = gamepad.axes[0];
-            var stickY = gamepad.axes[1];
+            var stickX = axes[0];
+            var stickY = axes[1];
 
             // up - down - left - right
             var dpad = [12, 13, 14, 15].map(k => gamepad.buttons[k].pressed);
@@ -372,10 +377,10 @@
             }
             if (kb.keyCode >= STICK_CONSTANT) {
                 var stickData = getStickData(kb.keyCode - STICK_CONSTANT);
-                if (Math.sign(stickData.value) !== Math.sign(gamepad.axes[stickData.index])) {
+                if (Math.sign(stickData.value) !== Math.sign(axes[stickData.index])) {
                     return; //conflicting directions (positive-negative)
                 }
-                var pressed = Math.abs(gamepad.axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
+                var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
                 kb.pressed = pressed * 1;
                 if (pressed) {
                     if (!processSpecialKeys(kb)) {
@@ -412,9 +417,9 @@
                     break;
                 }
             }
-            for (let k = 0; k < gamepad.axes.length; k++) {
-                if ((Math.abs(gamepad.axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
-                    var idx = axisToIdx(gamepad.axes[k], k);
+            for (let k = 0; k < axes.length; k++) {
+                if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
+                    var idx = axisToIdx(axes[k], k);
                     ModAPI.mc.currentScreen.keyTyped(idx + STICK_CONSTANT, idx + STICK_CONSTANT);
                     break;
                 }
