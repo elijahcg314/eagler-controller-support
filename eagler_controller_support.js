@@ -60,6 +60,13 @@
         eaglerCanvas.dispatchEvent(event);
     }
 
+    function simulateWheelEvent(deltaY) {
+        const event = new WheelEvent("wheel", {
+            deltaY: deltaY
+        });
+        eaglerCanvas.dispatchEvent(event);
+    }
+
     function positionCursor() {
         // min constraint (top - left)
         CURSOR_POS.x = Math.max(0, CURSOR_POS.x);
@@ -360,6 +367,8 @@
                 stickX *= DPAD_SPEED;
                 stickY *= DPAD_SPEED;
             }
+
+            simulateWheelEvent(75 * axes[3]);
 
             CURSOR_POS.x += stickX * coefficient;
             CURSOR_POS.y += stickY * coefficient;
