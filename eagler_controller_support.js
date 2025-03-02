@@ -402,12 +402,16 @@
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
                 kb.pressed = pressed * 1;
                 if (pressed) {
-                    if (!processSpecialKeys(kb)) {
+                    if (processSpecialKeys(kb)) {
                         return;
                     }
+                    kb.pressInitial ||= (kb.wasUnpressed);
+                    kb.wasUnpressed = 0;
                     kb.pressTime += canTick;
                 } else {
+                    kb.wasUnpressed = 1;
                     kb.pressTime = 0;
+                    kb.pressInitial = 0;
                 }
                 return;
             }
@@ -416,12 +420,16 @@
                 if (gamepad.buttons[keyCode]) {
                     kb.pressed = gamepad.buttons[keyCode].pressed * 1;
                     if (gamepad.buttons[keyCode].pressed) {
-                        if (!processSpecialKeys(kb)) {
+                        if (processSpecialKeys(kb)) {
                             return;
                         }
+                        kb.pressInitial ||= (kb.wasUnpressed);
+                        kb.wasUnpressed = 0;
                         kb.pressTime += canTick;
                     } else {
+                        kb.wasUnpressed = 1;
                         kb.pressTime = 0;
+                        kb.pressInitial = 0;
                     }
                 }
                 return;
@@ -524,21 +532,20 @@
 
     const oldGetKeyDisplayString = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyDisplayString")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyDisplayString")] = function (keyCode) {
+        if (keyCode === 0) {
+            return ModAPI.util.str("(none)");
+        }
         if ((!keyCode) || (keyCode < CONTROLLER_CONSTANT)) {
             return oldGetKeyDisplayString.apply(this, [keyCode]);
         }
         if (keyCode >= STICK_CONSTANT) {
             return ModAPI.util.str(getStickData(keyCode - STICK_CONSTANT).name);
         }
-        if (keyCode === 0) {
-            return ModAPI.util.str("(none)");
-        }
         return ModAPI.util.str(getButtonName(keyCode - CONTROLLER_CONSTANT));
     }
 
-    const oldGetSliderTextString = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyBinding")];
-    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settins.GameSettings", "getKeyBinding")] = function ($this, option) {
-        console.log(option);
+    const oldGetSliderTextString = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "getKeyBinding")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "getKeyBinding")] = function ($this, option) {
         if (!option) {
             return oldGetSliderTextString.apply(this, [$this, option]);
         }
@@ -548,6 +555,16 @@
             return ModAPI.util.str("Stick Drift Suppression: " + (value * 100).toFixed(0) + "%");
         }
         return oldGetSliderTextString.apply(this, [$this, option]);
+    }
+
+    const oldKbIsPressed = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")] = function ($this) {
+        if (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) {
+            var x = $this.$pressInitial;
+            $this.$pressInitial = 0;
+            return x;
+        }
+        return oldKbIsPressed.apply(this, [$this]);
     }
 
     const oldInitGui = ModAPI.hooks.methods["nmcg_GuiControls_initGui"];
