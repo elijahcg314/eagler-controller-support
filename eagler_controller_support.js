@@ -413,12 +413,14 @@
             if (kb.keyCode >= STICK_CONSTANT) {
                 var stickData = getStickData(kb.keyCode - STICK_CONSTANT);
                 if (!stickData) {
+                    kb.pressed = 0;
                     kb.wasUnpressed = 1;
                     kb.pressTime = 0;
                     kb.pressInitial = 0;
                     return; //unbound
                 }
                 if (Math.sign(stickData.value) !== Math.sign(axes[stickData.index])) {
+                    kb.pressed = 0;
                     kb.wasUnpressed = 1;
                     kb.pressTime = 0;
                     kb.pressInitial = 0;
