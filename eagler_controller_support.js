@@ -298,19 +298,25 @@
     const RED = EnumChatFormatting.staticVariables.RED;
     var delayFunctionQueue = [];
     function processSpecialKeys(kb) {
-        if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.attack") && (ModAPI.mc.leftClickCounter <= 0)) {
+        var desc = ModAPI.util.ustr(kb.keyDescription?.getRef() || null);
+        if ((desc === "key.attack") && (ModAPI.mc.leftClickCounter <= 0)) {
             kb.blacklisted = true;
             delayFunctionQueue.push(()=>{
                 ModAPI.mc.leftClickCounter = 1 + (5*(ModAPI.player?.capabilities?.isCreativeMode || 0));
             });
             return true;
         }
-        if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
+        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
             kb.blacklisted = true;
             delayFunctionQueue.push(()=>{
                 ModAPI.mc.rightClickDelayTimer = 4;
             });
-            return true;
+            kb.pressed = 1;
+            kb.pressTime = 4;
+            return false;
+        } else if (desc === "key.use") {
+            kb.pressed = 1;
+            kb.pressTime = 0;
         }
         return false;
     }
