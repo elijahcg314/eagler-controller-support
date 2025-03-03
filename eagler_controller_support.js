@@ -10,13 +10,14 @@
         gamepad = e.gamepad;
         console.log("KMAP controller connected!", gamepad);
     });
+    var isDebugBuild = true;
     var CURRENT_KMAP_PROFILE = "keyboard";
     const PROFILE_KEYBOARD = "keyboard";
     const PROFILE_CONTROLLER = "controller";
     const CONTROLLER_CONSTANT = 0x3000;
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
-    const STICK_DRIFT_SUPPRESSION_FN = (x => (Math.abs(x) > (ModAPI.settings.touchControlOpacity * 0.45)) ? x : 0);
+    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (ModAPI.settings.touchControlOpacity * 0.45))) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
@@ -90,6 +91,8 @@
     function lerp(a, b, k) {
         return (b - a) * k + a;
     }
+
+    const DEBUG_BIN = new Set();
 
     function button_utility_script2(inputArr, bindingClass, actionBindMode) {
         // By ZXMushroom63
@@ -310,6 +313,7 @@
         return false;
     }
     function gamepadLoop() {
+        DEBUG_BIN.clear();
         const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
         const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0);
         const STICK_LOOK = getStickData(Math.max(lookingBind.keyCode - STICK_CONSTANT, 0) || 0);
@@ -330,7 +334,9 @@
             return requestAnimationFrame(gamepadLoop);
         }
 
+        DEBUG_BIN.add("RAW / " + gamepad.axes.toString());
         var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
+        DEBUG_BIN.add("SUP / " + axes.toString());
 
         if (ModAPI.player && !ModAPI.mc.currentScreen) {
             GAMEPAD_CURSOR.style.display = "none";
@@ -567,9 +573,16 @@
         return oldKbIsPressed.apply(this, [$this]);
     }
 
-    const oldInitGui = ModAPI.hooks.methods["nmcg_GuiControls_initGui"];
-    ModAPI.hooks.methods["nmcg_GuiControls_initGui"] = function ($this) {
-        oldInitGui.apply(this, [$this]);
+    const oldRenderIngameGui = ModAPI.hooks.methods["nmcg_GuiIngame_renderGameOverlay"];
+    ModAPI.hooks.methods["nmcg_GuiIngame_renderGameOverlay"] = function ($this, f) {
+        oldRenderIngameGui.apply(this, [$this, f]);
+        if (isDebugBuild) {
+            [...DEBUG_BIN].forEach((debugString, i) => {
+                if (!ModAPI.util.isCritical()) {
+                    ModAPI.mc.fontRendererObj.renderString(ModAPI.util.str(debugString || ""), 0, 12*i, 0xFF0000, 1);
+                }
+            });
+        }
     };
     function loadProfile(profile, burn) {
         EnumChatFormatting.staticVariables.RED = RED;
