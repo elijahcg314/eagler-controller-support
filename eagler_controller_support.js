@@ -579,7 +579,7 @@
         if (isDebugBuild) {
             [...DEBUG_BIN].forEach((debugString, i) => {
                 if (!ModAPI.util.isCritical()) {
-                    ModAPI.mc.fontRendererObj.renderString(ModAPI.util.str(debugString || ""), 0, 12*i, 0xFF0000, 1);
+                    ModAPI.mc.fontRendererObj.renderString(ModAPI.util.str(debugString || ""), 0, 36 + 12*i, 0xFF0000, 1);
                 }
             });
         }
