@@ -299,12 +299,14 @@
     var delayFunctionQueue = [];
     function processSpecialKeys(kb) {
         if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.attack") && (ModAPI.mc.leftClickCounter <= 0)) {
+            kb.blacklisted = true;
             delayFunctionQueue.push(()=>{
                 ModAPI.mc.leftClickCounter = 1 + (5*(ModAPI.player?.capabilities?.isCreativeMode || 0));
             });
             return true;
         }
         if ((ModAPI.util.ustr(kb.keyDescription?.getRef() || null) === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
+            kb.blacklisted = true;
             delayFunctionQueue.push(()=>{
                 ModAPI.mc.rightClickDelayTimer = 4;
             });
@@ -565,7 +567,7 @@
 
     const oldKbIsPressed = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")] = function ($this) {
-        if (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) {
+        if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && !$this.$blacklisted) {
             var x = $this.$pressInitial;
             $this.$pressInitial = 0;
             return x;
