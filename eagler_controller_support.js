@@ -428,7 +428,7 @@
                 }
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
                 kb.pressed = pressed * 1;
-                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + b.pressed);
+                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + kb.pressed);
                 if (pressed) {
                     if (processSpecialKeys(kb)) {
                         return;
