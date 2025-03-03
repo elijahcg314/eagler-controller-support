@@ -445,7 +445,7 @@
                 var keyCode = kb.keyCode - CONTROLLER_CONSTANT;
                 if (gamepad.buttons[keyCode]) {
                     kb.pressed = gamepad.buttons[keyCode].pressed * 1;
-                    DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " b= " + pressed);
+                    DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " b= " + kb.pressed);
                     if (gamepad.buttons[keyCode].pressed) {
                         if (processSpecialKeys(kb)) {
                             return;
