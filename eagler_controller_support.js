@@ -427,8 +427,8 @@
                     return; //conflicting directions (positive-negative)
                 }
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
-                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + pressed);
                 kb.pressed = pressed * 1;
+                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + b.pressed);
                 if (pressed) {
                     if (processSpecialKeys(kb)) {
                         return;
