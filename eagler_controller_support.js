@@ -530,7 +530,7 @@
         })[
             [DX, DY].join(",")
         ];
-        const name = "Stick #" + Math.floor(idx / 4) + " " + direction;
+        const name = "Stick #" + (Math.floor(idx / 4) + 1) + " " + direction;
         const index = stick * 2 + Math.abs(DY);
         const value = idx % 2 ? DY : DX;
         return {
