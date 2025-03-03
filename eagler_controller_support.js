@@ -324,7 +324,7 @@
         DEBUG_BIN.clear();
         const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
         const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0);
-        const STICK_LOOK = getStickData(Math.max(lookingBind.keyCode - STICK_CONSTANT, 0) || 0);
+        const STICK_LOOK = getStickData((lookingBind.keyCode - STICK_CONSTANT) || 0);
         if (CURRENT_KMAP_PROFILE !== PROFILE_CONTROLLER) {
             return;
         }
@@ -349,14 +349,16 @@
         if (ModAPI.player && !ModAPI.mc.currentScreen) {
             GAMEPAD_CURSOR.style.display = "none";
 
-            var coefficient = lerp(1.5, 15, ModAPI.settings.mouseSensitivity);
+            if (STICK_LOOK) {
+                var coefficient = lerp(1.5, 15, ModAPI.settings.mouseSensitivity);
 
-            if (ModAPI.settings.invertMouse) {
-                coefficient *= -1;
+                if (ModAPI.settings.invertMouse) {
+                    coefficient *= -1;
+                }
+
+                ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
+                ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
             }
-
-            ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
-            ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
         } else if (!isGuiControls(ModAPI.mc.currentScreen?.getRef()) || !ModAPI.mc.currentScreen?.buttonId) {
             GAMEPAD_CURSOR.style.display = "block";
 
@@ -410,10 +412,20 @@
             }
             if (kb.keyCode >= STICK_CONSTANT) {
                 var stickData = getStickData(kb.keyCode - STICK_CONSTANT);
+                if (!stickData) {
+                    kb.wasUnpressed = 1;
+                    kb.pressTime = 0;
+                    kb.pressInitial = 0;
+                    return; //unbound
+                }
                 if (Math.sign(stickData.value) !== Math.sign(axes[stickData.index])) {
+                    kb.wasUnpressed = 1;
+                    kb.pressTime = 0;
+                    kb.pressInitial = 0;
                     return; //conflicting directions (positive-negative)
                 }
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
+                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + pressed);
                 kb.pressed = pressed * 1;
                 if (pressed) {
                     if (processSpecialKeys(kb)) {
@@ -433,6 +445,7 @@
                 var keyCode = kb.keyCode - CONTROLLER_CONSTANT;
                 if (gamepad.buttons[keyCode]) {
                     kb.pressed = gamepad.buttons[keyCode].pressed * 1;
+                    DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " b= " + pressed);
                     if (gamepad.buttons[keyCode].pressed) {
                         if (processSpecialKeys(kb)) {
                             return;
@@ -518,6 +531,9 @@
         }
     }
     function getStickData(idx) {
+        if (idx < 0) {
+            return null;
+        }
         const radians = 90 * (Math.PI / 180);
         const stick = Math.floor(idx / 4);
         const DX = Math.round(Math.cos((idx % 4) * radians));
@@ -553,7 +569,7 @@
             return oldGetKeyDisplayString.apply(this, [keyCode]);
         }
         if (keyCode >= STICK_CONSTANT) {
-            return ModAPI.util.str(getStickData(keyCode - STICK_CONSTANT).name);
+            return ModAPI.util.str(getStickData(keyCode - STICK_CONSTANT)?.name || "(none)");
         }
         return ModAPI.util.str(getButtonName(keyCode - CONTROLLER_CONSTANT));
     }
