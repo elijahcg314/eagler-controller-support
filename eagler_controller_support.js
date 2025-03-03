@@ -306,7 +306,7 @@
             });
             return true;
         }
-        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
+        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
             kb.blacklisted = true;
             delayFunctionQueue.push(()=>{
                 ModAPI.mc.rightClickDelayTimer = 4;
