@@ -1,8 +1,8 @@
 (function () {
     ModAPI.meta.title("🎮 Gamepad API Integration");
-    ModAPI.meta.version("1.0pre7");
+    ModAPI.meta.version("1.0pre8");
     ModAPI.meta.icon("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAAAXNSR0IArs4c6QAAAPhJREFUOE+NkrEKgzAQhv+AOAguOnTQ1yjduoiufQkfy5foanHpVvoaOhR0EhxUSMnRhCRNSrNcjrv77v7kGD6nrmsu78I2TcN03xenpL7veZZlej6GYTB8FX9VwKGleJ7njOnF0zRRUZqmZJdlQRiGCIKA/OoBtCcAZQncbgRRAFE8zzO2bUOSJATZ9x3ruiKKIjXN8X7B83wl3wkQgTiO1RSGDssxACKmSyiKAl3XUQljjHHOuS3xCyAbyGJpBWAcR25L9AIEyJ5AAnSJPwGub/xbgvxj/c18u2LsgfwasSCu17chJMHeRFd3CdMBahP1oLj7uvvy3totwxHXpk7GAAAAAElFTkSuQmCC");
-    ModAPI.meta.credits("By ZXMushroom63");
+    ModAPI.meta.credits("By ZXMushroom63 & elijahcg314");
     ModAPI.meta.description("Adds various keybindings and features to add controller support.");
     ModAPI.require("player");
     var gamepad = null;
@@ -136,10 +136,17 @@
         }
     }
 
+    function unpressKb(kb) {
+        kb.pressed = 0;
+        kb.wasUnpressed = 1;
+        kb.pressTime = 0;
+        kb.pressInitial = 0;
+        kb.pressTimeRaw = 0;
+    }
+
     function unpressAllKeys() {
         ModAPI.settings.keyBindings.forEach(kb => {
-            kb.pressed = 0;
-            kb.pressTime = 0;
+            unpressKb(kb);
         });
         oldClickState = false;
     }
@@ -261,13 +268,11 @@
             ModAPI.promisify(ModAPI.player.jump)(); //lmao this caused a call stack implosion because it tries to trigger an achievement/stat XD
         }
         if (!ModAPI.mc.currentScreen) {
-            if (hotbarPreviousBind.pressed && (hotbarPreviousBind.pressTime <= 0)) {
-                hotbarPreviousBind.pressTime++;
+            if (hotbarPreviousBind.pressed && ((hotbarPreviousBind.pressTimeRaw === 1) || (Math.max(hotbarPreviousBind.pressTimeRaw - 16, 0) % 6 === 1))) {
                 ModAPI.player.inventory.currentItem--;
                 ModAPI.player.inventory.currentItem = ((ModAPI.player.inventory.currentItem + 1) || 9) - 1;
             }
-            if (hotbarNextBind.pressed && (hotbarNextBind.pressTime <= 0)) {
-                hotbarNextBind.pressTime++;
+            if (hotbarNextBind.pressed && ((hotbarNextBind.pressTimeRaw === 1) || (Math.max(hotbarNextBind.pressTimeRaw - 16, 0) % 6 === 1))) {
                 ModAPI.player.inventory.currentItem++;
                 ModAPI.player.inventory.currentItem %= 9;
             }
@@ -410,20 +415,15 @@
             if (["key.categories.movement", "key.categories.gameplay"].includes(ModAPI.util.ustr(kb.keyCategory?.getRef())) && ModAPI.mc.currentScreen) {
                 return; //no moving while a gui is displayed
             }
+            kb.pressTimeRaw ||= 0;
             if (kb.keyCode >= STICK_CONSTANT) {
                 var stickData = getStickData(kb.keyCode - STICK_CONSTANT);
                 if (!stickData) {
-                    kb.pressed = 0;
-                    kb.wasUnpressed = 1;
-                    kb.pressTime = 0;
-                    kb.pressInitial = 0;
+                    unpressKb(kb);
                     return; //unbound
                 }
                 if (Math.sign(stickData.value) !== Math.sign(axes[stickData.index])) {
-                    kb.pressed = 0;
-                    kb.wasUnpressed = 1;
-                    kb.pressTime = 0;
-                    kb.pressInitial = 0;
+                    unpressKb(kb);
                     return; //conflicting directions (positive-negative)
                 }
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
@@ -436,10 +436,9 @@
                     kb.pressInitial ||= (kb.wasUnpressed);
                     kb.wasUnpressed = 0;
                     kb.pressTime += canTick;
+                    kb.pressTimeRaw += canTick;
                 } else {
-                    kb.wasUnpressed = 1;
-                    kb.pressTime = 0;
-                    kb.pressInitial = 0;
+                    unpressKb(kb);
                 }
                 return;
             }
@@ -455,10 +454,9 @@
                         kb.pressInitial ||= (kb.wasUnpressed);
                         kb.wasUnpressed = 0;
                         kb.pressTime += canTick;
+                        kb.pressTimeRaw += canTick;
                     } else {
-                        kb.wasUnpressed = 1;
-                        kb.pressTime = 0;
-                        kb.pressInitial = 0;
+                        unpressKb(kb);
                     }
                 }
                 return;
