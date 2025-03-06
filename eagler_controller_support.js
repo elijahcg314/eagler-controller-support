@@ -325,7 +325,11 @@
         }
         return false;
     }
+    var oldTime = Date.now();
     function gamepadLoop() {
+        var now = Date.now();
+        var deltaTime = (now - oldTime) / 1000 * 60;
+        oldTime = now;
         DEBUG_BIN.clear();
         const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
         const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0);
@@ -361,6 +365,8 @@
                     coefficient *= -1;
                 }
 
+                coefficient *= deltaTime;
+
                 ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
                 ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
             }
@@ -368,6 +374,8 @@
             GAMEPAD_CURSOR.style.display = "block";
 
             var coefficient = lerp(7.5, 30, ModAPI.settings.mouseSensitivity);
+
+            coefficient *= deltaTime;
 
             var stickX = axes[0];
             var stickY = axes[1];
