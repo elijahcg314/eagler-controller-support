@@ -17,7 +17,8 @@
     const CONTROLLER_CONSTANT = 0x3000;
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
-    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (ModAPI.settings.touchControlOpacity * 0.45))) ? x : 0);
+    var stickDriftSuppression = 0;
+    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.45))) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
@@ -179,7 +180,10 @@
         }
 
         if (parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile))) {
-            ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
+            stickDriftSuppression = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
+            if (profile !== PROFILE_CONTROLLER) {
+                ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
+            }
         }
 
         if (isGuiControls(ModAPI.mc.currentScreen?.getRef())) {
@@ -602,6 +606,7 @@
         }
         var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
         if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
+            stickDriftSuppression = value;
             return;
         }
         return oldSetSliderValue.apply(this, [$this, option]);
