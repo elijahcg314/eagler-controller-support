@@ -608,7 +608,7 @@
         }
         var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
         if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
-            var value = ModAPI.settings.getOptionFloatValue(option);
+            var value = stickDriftSuppression;
             return ModAPI.util.str("Stick Drift Suppression: " + (value * 100).toFixed(0) + "%");
         }
         return oldGetSliderTextString.apply(this, [$this, option]);
