@@ -732,6 +732,10 @@
     ];
     button_utility_script2(profileButtons, "net.minecraft.client.gui.GuiControls", 0);
 
+    addEventListener("beforeunload", () => {
+        serialiseKeybindingList(CURRENT_KMAP_PROFILE);
+    });
+    
     loadProfile(PROFILE_KEYBOARD, true);
 
     var forceShiftKey = false;
