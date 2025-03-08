@@ -595,6 +595,18 @@
         return oldGetSliderTextString.apply(this, [$this, option]);
     }
 
+    const oldSetSliderValue = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "setOptionFloatValue")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "setOptionFloatValue")] = function ($this, option, value) {
+        if (!option) {
+            return oldSetSliderValue.apply(this, [$this, option, value]);
+        }
+        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
+        if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
+            return;
+        }
+        return oldSetSliderValue.apply(this, [$this, option]);
+    }
+
     const oldKbIsPressed = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")] = function ($this) {
         if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && !$this.$blacklisted) {
@@ -701,9 +713,6 @@
 
     loadProfile(PROFILE_KEYBOARD, true);
 
-    window.addEventListener("beforeunload", () => {
-        loadProfile(PROFILE_KEYBOARD);
-    }, true);
     var forceShiftKey = false;
     const oldIsShiftEntry = ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"];
     ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"] = function (...args) {
