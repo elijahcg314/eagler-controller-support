@@ -245,8 +245,8 @@
     var canTick = true;
     var processingShiftClick = false;
     function wait(ms) {
-        return new Promise((res,rej)=>{
-            setTimeout(()=>{res()}, ms);
+        return new Promise((res, rej) => {
+            setTimeout(() => { res() }, ms);
         });
     }
     async function triggerShiftClick() {
@@ -284,7 +284,7 @@
         if (shiftClickBind.pressed && (shiftClickBind.pressTime <= 1) && ModAPI.mc.currentScreen) {
             triggerShiftClick();
         }
-        delayFunctionQueue.forEach((x)=>x());
+        delayFunctionQueue.forEach((x) => x());
         delayFunctionQueue = [];
     });
     var stateMap = [];
@@ -310,14 +310,14 @@
         var desc = ModAPI.util.ustr(kb.keyDescription?.getRef() || null);
         if ((desc === "key.attack") && (ModAPI.mc.leftClickCounter <= 0)) {
             kb.blacklisted = true;
-            delayFunctionQueue.push(()=>{
-                ModAPI.mc.leftClickCounter = 1 + (5*(ModAPI.player?.capabilities?.isCreativeMode || 0));
+            delayFunctionQueue.push(() => {
+                ModAPI.mc.leftClickCounter = 1 + (5 * (ModAPI.player?.capabilities?.isCreativeMode || 0));
             });
             return true;
         }
         if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
             kb.blacklisted = true;
-            delayFunctionQueue.push(()=>{
+            delayFunctionQueue.push(() => {
                 ModAPI.mc.rightClickDelayTimer = 4;
             });
             kb.pressed = 1;
@@ -387,7 +387,7 @@
             // up - down - left - right
             var dpad = [12, 13, 14, 15].map(k => gamepad.buttons[k].pressed);
 
-            if (dpad.reduce((acc, v)=>acc||v)) {
+            if (dpad.reduce((acc, v) => acc || v)) {
                 stickX = 0;
                 stickY = 0;
 
@@ -521,7 +521,9 @@
             'D-Pad Up',  // 12
             'D-Pad Down',// 13
             'D-Pad Left',// 14
-            'D-Pad Right'// 15
+            'D-Pad Right',// 15
+            'Gamepad Home',//16
+            'Touch Pad'//17
         ];
 
         if (buttonIndex < 0 || buttonIndex >= buttonNames.length) {
@@ -563,7 +565,13 @@
         })[
             [DX, DY].join(",")
         ];
-        const name = "Stick #" + (Math.floor(idx / 4) + 1) + " " + direction;
+        var basename;
+        if (Math.floor(idx / 4) < 2) {
+            basename = (Math.floor(idx / 4) === 0) ? "Left Stick" : "Right Stick"
+        } else {
+            basename = "Stick #" + (Math.floor(idx / 4) + 1);
+        }
+        const name = basename + " " + direction;
         const index = stick * 2 + Math.abs(DY);
         const value = idx % 2 ? DY : DX;
         return {
@@ -633,7 +641,7 @@
         if (isDebugBuild) {
             [...DEBUG_BIN].forEach((debugString, i) => {
                 if (!ModAPI.util.isCritical()) {
-                    ModAPI.mc.fontRendererObj.renderString(ModAPI.util.str(debugString || ""), 0, 36 + 12*i, 0xFF0000, 1);
+                    ModAPI.mc.fontRendererObj.renderString(ModAPI.util.str(debugString || ""), 0, 36 + 12 * i, 0xFF0000, 1);
                 }
             });
         }
