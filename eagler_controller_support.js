@@ -493,7 +493,7 @@
             for (let k = 0; k < gamepad.buttons.length; k++) {
                 if (gamepad.buttons[k].pressed && !stateMap[k]) {
                     delayFunctionQueue.push(()=>{
-                        if (ModAPI.mc.currentScreen) {
+                        if (!ModAPI.mc.currentScreen) {
                             return;
                         }
                         ModAPI.mc.currentScreen.keyTyped(0, k + CONTROLLER_CONSTANT);
@@ -505,7 +505,7 @@
                 if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
                     var idx = axisToIdx(axes[k], k);
                     delayFunctionQueue.push(()=>{
-                        if (ModAPI.mc.currentScreen) {
+                        if (!ModAPI.mc.currentScreen) {
                             return;
                         }
                         ModAPI.mc.currentScreen.keyTyped(0, idx + STICK_CONSTANT);
