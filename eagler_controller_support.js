@@ -509,10 +509,10 @@
             'Gamepad Start',    // 9
             'Gamepad LS',       // 10 (Left Stick)
             'Gamepad RS',       // 11 (Right Stick)
-            'DPad-Up',  // 12
-            'DPad-Down',// 13
-            'DPad-Left',// 14
-            'DPad-Right'// 15
+            'D-Pad Up',  // 12
+            'D-Pad Down',// 13
+            'D-Pad Left',// 14
+            'D-Pad Right'// 15
         ];
 
         if (buttonIndex < 0 || buttonIndex >= buttonNames.length) {
