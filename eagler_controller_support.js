@@ -624,7 +624,7 @@
             stickDriftSuppression = value;
             return;
         }
-        return oldSetSliderValue.apply(this, [$this, option]);
+        return oldSetSliderValue.apply(this, [$this, option, value]);
     }
 
     const oldKbIsPressed = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")];
