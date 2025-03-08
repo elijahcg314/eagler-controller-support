@@ -315,7 +315,7 @@
             });
             return true;
         }
-        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
+        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
             kb.blacklisted = true;
             delayFunctionQueue.push(() => {
                 ModAPI.mc.rightClickDelayTimer = 4;
@@ -662,6 +662,7 @@
         deserialiseKeybindingList(CURRENT_KMAP_PROFILE);
 
         if (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) {
+            EnumChatFormatting.staticVariables.RED = EnumChatFormatting.staticVariables.WHITE;
             const gamepads = navigator.getGamepads();
             for (let i = 0; i < gamepads.length; i++) {
                 const gp = gamepads[i];
