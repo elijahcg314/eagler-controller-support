@@ -313,7 +313,12 @@
             delayFunctionQueue.push(() => {
                 ModAPI.mc.leftClickCounter = 1 + (5 * (ModAPI.player?.capabilities?.isCreativeMode || 0));
             });
-            return true;
+            kb.pressed = 1;
+            kb.pressTime = 4;
+            return false;
+        } else if (desc === "key.attack") {
+            kb.pressed = 1;
+            kb.pressTime = 0;
         }
         if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
             kb.blacklisted = true;
@@ -373,6 +378,8 @@
 
                 ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
                 ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
+                ModAPI.player.rotationPitch = Math.min(ModAPI.player.rotationPitch, 90);
+                ModAPI.player.rotationPitch = Math.max(ModAPI.player.rotationPitch, -90);
             }
         } else if (!isGuiControls(ModAPI.mc.currentScreen?.getRef()) || !ModAPI.mc.currentScreen?.buttonId) {
             GAMEPAD_CURSOR.style.display = "block";
