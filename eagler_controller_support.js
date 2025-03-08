@@ -378,7 +378,7 @@
 
                 ModAPI.player.rotationYaw += axes[STICK_LOOK.stick * 2 + 0] * ModAPI.settings.mouseSensitivity * coefficient;
                 ModAPI.player.rotationPitch += axes[STICK_LOOK.stick * 2 + 1] * ModAPI.settings.mouseSensitivity * coefficient;
-                
+
                 ModAPI.player.rotationPitch = Math.min(ModAPI.player.rotationPitch, 90);
                 ModAPI.player.rotationPitch = Math.max(ModAPI.player.rotationPitch, -90);
             }
@@ -492,14 +492,24 @@
         if (ModAPI.mc.currentScreen) {
             for (let k = 0; k < gamepad.buttons.length; k++) {
                 if (gamepad.buttons[k].pressed && !stateMap[k]) {
-                    ModAPI.mc.currentScreen.keyTyped(k + CONTROLLER_CONSTANT, k + CONTROLLER_CONSTANT);
+                    delayFunctionQueue.push(()=>{
+                        if (ModAPI.mc.currentScreen) {
+                            return;
+                        }
+                        ModAPI.mc.currentScreen.keyTyped(0, k + CONTROLLER_CONSTANT);
+                    });
                     break;
                 }
             }
             for (let k = 0; k < axes.length; k++) {
                 if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
                     var idx = axisToIdx(axes[k], k);
-                    ModAPI.mc.currentScreen.keyTyped(idx + STICK_CONSTANT, idx + STICK_CONSTANT);
+                    delayFunctionQueue.push(()=>{
+                        if (ModAPI.mc.currentScreen) {
+                            return;
+                        }
+                        ModAPI.mc.currentScreen.keyTyped(0, idx + STICK_CONSTANT);
+                    });
                     break;
                 }
             }
