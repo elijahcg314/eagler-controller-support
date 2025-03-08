@@ -516,8 +516,8 @@
             'Gamepad RT',       // 7
             'Gamepad Back',     // 8
             'Gamepad Start',    // 9
-            'Gamepad LS',       // 10 (Left Stick)
-            'Gamepad RS',       // 11 (Right Stick)
+            'Gamepad L3',       // 10 (Left Stick)
+            'Gamepad R3',       // 11 (Right Stick)
             'D-Pad Up',  // 12
             'D-Pad Down',// 13
             'D-Pad Left',// 14
@@ -565,13 +565,15 @@
         })[
             [DX, DY].join(",")
         ];
+
         var basename;
         if (Math.floor(idx / 4) < 2) {
-            basename = (Math.floor(idx / 4) === 0) ? "Left Stick" : "Right Stick"
+            basename = (Math.floor(idx / 4) === 0) ? "LS" : "RS"
         } else {
             basename = "Stick #" + (Math.floor(idx / 4) + 1);
         }
         const name = basename + " " + direction;
+
         const index = stick * 2 + Math.abs(DY);
         const value = idx % 2 ? DY : DX;
         return {
