@@ -268,11 +268,11 @@
             ModAPI.promisify(ModAPI.player.jump)(); //lmao this caused a call stack implosion because it tries to trigger an achievement/stat XD
         }
         if (!ModAPI.mc.currentScreen) {
-            if (hotbarPreviousBind.pressed && ((hotbarPreviousBind.pressTimeRaw === 1) || (Math.max(hotbarPreviousBind.pressTimeRaw - 16, 0) % 6 === 1))) {
+            if (hotbarPreviousBind.pressed && ((hotbarPreviousBind.pressTimeRaw === 1) || (Math.max(hotbarPreviousBind.pressTimeRaw - 5, 0) % 2 === 1))) {
                 ModAPI.player.inventory.currentItem--;
                 ModAPI.player.inventory.currentItem = ((ModAPI.player.inventory.currentItem + 1) || 9) - 1;
             }
-            if (hotbarNextBind.pressed && ((hotbarNextBind.pressTimeRaw === 1) || (Math.max(hotbarNextBind.pressTimeRaw - 16, 0) % 6 === 1))) {
+            if (hotbarNextBind.pressed && ((hotbarNextBind.pressTimeRaw === 1) || (Math.max(hotbarNextBind.pressTimeRaw - 5, 0) % 2 === 1))) {
                 ModAPI.player.inventory.currentItem++;
                 ModAPI.player.inventory.currentItem %= 9;
             }
