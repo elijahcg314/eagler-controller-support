@@ -320,17 +320,19 @@
             kb.pressed = 1;
             kb.pressTime = 0;
         }
-        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 0)) {
-            kb.blacklisted = false;
+        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
+            kb.blacklisted = true;
+
             delayFunctionQueue.push(() => {
-                kb.pressInitial = 1;
                 ModAPI.mc.rightClickDelayTimer = 4;
             });
-            kb.pressed = 0;
-            kb.pressTime = 0;
-            return true;
+
+            kb.pressTime = 1;
+            kb.pressed = 1;
+
+            return false;
         } else if (desc === "key.use") {
-            kb.pressed = 0;
+            kb.pressed = 1;
             kb.pressTime = 0;
         }
         return false;
