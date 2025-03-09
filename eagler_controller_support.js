@@ -811,7 +811,7 @@
         {
             text: "Load Defaults",
             click: (gui, btn) => {
-                localStorage.setItem("eagX.controlmap." + CURRENT_KMAP_PROFILE, CONTROLLER_DEFAULTS);
+                localStorage.setItem("eagX.controlmap." + CURRENT_KMAP_PROFILE, JSON.stringify(CONTROLLER_DEFAULTS));
                 loadProfile(CURRENT_KMAP_PROFILE, true);
             },
             getPos: (gui) => {
@@ -825,7 +825,7 @@
             },
             w: 80,
             h: 20,
-            uid: 14275428
+            uid: 14275144
         }
     ];
 
