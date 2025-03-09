@@ -24,6 +24,47 @@
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
     const eaglerCanvas = document.querySelector("._eaglercraftX_canvas_element");
     const GAMEPAD_CURSOR = document.createElement("div");
+    const CONTROLLER_DEFAULTS = {
+        "key.attack": 7 + CONTROLLER_CONSTANT,
+        "key.use": 6 + CONTROLLER_CONSTANT,
+        "key.forward": 3 + STICK_CONSTANT,
+        "key.left": 2 + STICK_CONSTANT,
+        "key.back": 1 + STICK_CONSTANT,
+        "key.right": 0 + STICK_CONSTANT,
+        "key.jump": 0 + CONTROLLER_CONSTANT,
+        "key.sneak": 11 + CONTROLLER_CONSTANT,
+        "key.sprint": 10 + CONTROLLER_CONSTANT,
+        "key.drop": 13 + CONTROLLER_CONSTANT,
+        "key.inventory": 3 + CONTROLLER_CONSTANT,
+        "key.chat": 15 + CONTROLLER_CONSTANT,
+        "key.playerlist": 8 + CONTROLLER_CONSTANT,
+        "key.pickItem": 0,
+        "key.command": 0,
+        "key.screenshot": 0,
+        "key.togglePerspective": 12 + CONTROLLER_CONSTANT,
+        "key.smoothCamera": 0,
+        "key.zoomCamera": 0,
+        "key.function": 0,
+        "key.close": 9 + CONTROLLER_CONSTANT,
+        "key.hotbar.1": 0,
+        "key.hotbar.2": 0,
+        "key.hotbar.3": 0,
+        "key.hotbar.4": 0,
+        "key.hotbar.5": 0,
+        "key.hotbar.6": 0,
+        "key.hotbar.7": 0,
+        "key.hotbar.8": 0,
+        "key.hotbar.9": 0,
+        "Left Click": 0 + CONTROLLER_CONSTANT,
+        "Right Click": 0,
+        "Looking (any direction)": 0 + STICK_CONSTANT,
+        "Hotbar Previous": 4 + CONTROLLER_CONSTANT,
+        "Hotbar Next": 5 + CONTROLLER_CONSTANT,
+        "Shift Click": 0
+    };
+    // 1 + CONTROLLER_CONSTANT = exit chat
+    // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
+    // 1 + CONTROLLER_CONSTANT = done button
     GAMEPAD_CURSOR.innerText = "⊹";
     GAMEPAD_CURSOR.style = `
     position:fixed;
@@ -423,18 +464,20 @@
             positionCursor();
             simulateMouseEvent("mousemove");
         }
-        if (gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
-            if (gamepad.buttons[STICK_LMB_BTN].pressed) {
-                simulateMouseEvent("mousedown");
-            } else {
-                simulateMouseEvent("mouseup");
+        if (ModAPI.mc.currentScreen) {
+            if (gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
+                if (gamepad.buttons[STICK_LMB_BTN].pressed) {
+                    simulateMouseEvent("mousedown");
+                } else {
+                    simulateMouseEvent("mouseup");
+                }
             }
-        }
-        if (gamepad.buttons[STICK_RMB_BTN] && gamepad.buttons[STICK_RMB_BTN].pressed !== stateMap[STICK_RMB_BTN]) {
-            if (gamepad.buttons[STICK_RMB_BTN].pressed) {
-                simulateMouseEvent("mousedown", 2);
-            } else {
-                simulateMouseEvent("mouseup", 2);
+            if (gamepad.buttons[STICK_RMB_BTN] && gamepad.buttons[STICK_RMB_BTN].pressed !== stateMap[STICK_RMB_BTN]) {
+                if (gamepad.buttons[STICK_RMB_BTN].pressed) {
+                    simulateMouseEvent("mousedown", 2);
+                } else {
+                    simulateMouseEvent("mouseup", 2);
+                }
             }
         }
 
@@ -511,7 +554,7 @@
 
             for (let k = 0; k < gamepad.buttons.length; k++) {
                 if (gamepad.buttons[k].pressed && !stateMap[k]) {
-                    delayFunctionQueue.push(()=>{
+                    delayFunctionQueue.push(() => {
                         if (!ModAPI.mc.currentScreen) {
                             return;
                         }
@@ -523,7 +566,7 @@
             for (let k = 0; k < axes.length; k++) {
                 if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
                     var idx = axisToIdx(axes[k], k);
-                    delayFunctionQueue.push(()=>{
+                    delayFunctionQueue.push(() => {
                         if (!ModAPI.mc.currentScreen) {
                             return;
                         }
@@ -762,6 +805,25 @@
                 btn.enabled = 1 * (CURRENT_KMAP_PROFILE !== PROFILE_CONTROLLER);
             },
             w: 75,
+            h: 20,
+            uid: 14275428
+        },
+        {
+            text: "Load Defaults",
+            click: (gui, btn) => {
+                localStorage.setItem("eagX.controlmap." + CURRENT_KMAP_PROFILE, CONTROLLER_DEFAULTS);
+                loadProfile(CURRENT_KMAP_PROFILE, true);
+            },
+            getPos: (gui) => {
+                return [
+                    (gui.width / 2) + 5 + 150 + 10,
+                    gui.height - 29
+                ]
+            },
+            init: (btn) => {
+                btn.enabled = 1 * (CURRENT_KMAP_PROFILE !== PROFILE_CONTROLLER);
+            },
+            w: 80,
             h: 20,
             uid: 14275428
         }
