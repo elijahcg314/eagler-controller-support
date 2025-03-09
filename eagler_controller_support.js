@@ -332,7 +332,7 @@
 
             return false;
         } else if (desc === "key.use") {
-            kb.pressed = 1;
+            kb.pressed = 0;
             kb.pressTime = 0;
         }
         return false;
