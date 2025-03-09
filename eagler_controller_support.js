@@ -34,7 +34,7 @@
     height: 16px;
     text-align: center;
     color: white;
-    text-shadow: 0px 0px 4px black;
+    text-shadow: 0px 0px 2px black;
     top: 0px;
     left: 0px;
     z-index: 999;
@@ -159,7 +159,11 @@
         });
         localStorage.setItem("eagX.controlmap." + profile, JSON.stringify(out));
         localStorage.setItem("eagX.controlmap.sens." + profile, ModAPI.settings.mouseSensitivity);
-        localStorage.setItem("eagX.controlmap.tc." + profile, ModAPI.settings.touchControlOpacity);
+        if (profile === PROFILE_CONTROLLER) {
+            localStorage.setItem("eagX.controlmap.tc." + profile, stickDriftSuppression);
+        } else {
+            localStorage.setItem("eagX.controlmap.tc." + profile, ModAPI.settings.touchControlOpacity);
+        }
     }
 
     function deserialiseKeybindingList(profile) {
@@ -196,7 +200,7 @@
                     }
 
                     if (ModAPI.util.ustr(slider.options.enumString.getRef()) === "options.touchControlOpacity") {
-                        slider.sliderValue = ModAPI.settings.touchControlOpacity;
+                        slider.sliderValue = (profile === PROFILE_CONTROLLER) ? stickDriftSuppression : ModAPI.settings.touchControlOpacity;
                         slider.displayString = ModAPI.mc.gameSettings.getKeyBinding(slider.options.getRef()).getRef();
                     }
                 }
