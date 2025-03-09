@@ -45,7 +45,7 @@
         "key.smoothCamera": 0,
         "key.zoomCamera": 0,
         "key.function": 0,
-        "key.close": 9 + CONTROLLER_CONSTANT,
+        "key.close": 8 + CONTROLLER_CONSTANT,
         "key.hotbar.1": 0,
         "key.hotbar.2": 0,
         "key.hotbar.3": 0,
@@ -60,7 +60,9 @@
         "Looking (any direction)": 4 + STICK_CONSTANT,
         "Hotbar Previous": 4 + CONTROLLER_CONSTANT,
         "Hotbar Next": 5 + CONTROLLER_CONSTANT,
-        "Shift Click": 0
+        "Shift Click": 0,
+        "Open Settings": 9 + CONTROLLER_CONSTANT,
+        "Parent Screen / Back": 1 + CONTROLLER_CONSTANT
     };
     // 1 + CONTROLLER_CONSTANT = exit chat
     // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
@@ -250,42 +252,63 @@
 
         ModAPI.reflect.getClassByName("KeyBinding").staticMethods.resetKeyBindingArrayAndHash.method();
     }
+
     var leftClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Left Click"),
         CONTROLLER_CONSTANT + 10,
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(leftClickBind.getRef());
+    
     var rightClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Right Click"),
         CONTROLLER_CONSTANT + 11,
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(rightClickBind.getRef());
+
     var lookingBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Looking (any direction)"),
         STICK_CONSTANT + 0,
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(lookingBind.getRef());
+
     var hotbarPreviousBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Hotbar Previous"),
         CONTROLLER_CONSTANT + 4,
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(hotbarPreviousBind.getRef());
+
     var hotbarNextBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Hotbar Next"),
         CONTROLLER_CONSTANT + 5,
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(hotbarNextBind.getRef());
+
     var shiftClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Shift Click"),
         0,
         ModAPI.util.str("Gamepad Support")
     ));
-    ModAPI.settings.keyBindings.push(shiftClickBind.getRef());
+    ModAPI.settings.keyBindings.push(hotbarNextBind.getRef());
+
+    var openSettingsBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Open Settings"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(openSettingsBind.getRef());
+
+    var parentScreenBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Parent Screen / Back"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(parentScreenBind.getRef());
+
     const AUTOJUMP = false;
     var canTick = true;
     var processingShiftClick = false;
@@ -430,6 +453,10 @@
                 ModAPI.player.rotationPitch = Math.min(ModAPI.player.rotationPitch, 90);
                 ModAPI.player.rotationPitch = Math.max(ModAPI.player.rotationPitch, -90);
             }
+
+            if (openSettingsBind.isPressed()) {
+                ModAPI.mc.displayInGameMenu();
+            }
         } else if (!isGuiControls(ModAPI.mc.currentScreen?.getRef()) || !ModAPI.mc.currentScreen?.buttonId) {
             GAMEPAD_CURSOR.style.display = "block";
 
@@ -463,6 +490,10 @@
             CURSOR_POS.y += stickY * coefficient;
             positionCursor();
             simulateMouseEvent("mousemove");
+
+            if (parentScreenBind.isPressed() && ModAPI.mc.currentScreen && ModAPI.mc.currentScreen.parentScreen) {
+                ModAPI.mc.displayGuiScreen(ModAPI.mc.currentScreen.parentScreen.getRef());
+            }
         }
         if (ModAPI.mc.currentScreen) {
             if (gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
