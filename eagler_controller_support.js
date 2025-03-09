@@ -57,7 +57,7 @@
         "key.hotbar.9": 0,
         "Left Click": 0 + CONTROLLER_CONSTANT,
         "Right Click": 0,
-        "Looking (any direction)": 0 + STICK_CONSTANT,
+        "Looking (any direction)": 4 + STICK_CONSTANT,
         "Hotbar Previous": 4 + CONTROLLER_CONSTANT,
         "Hotbar Next": 5 + CONTROLLER_CONSTANT,
         "Shift Click": 0
