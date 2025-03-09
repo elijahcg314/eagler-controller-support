@@ -153,7 +153,6 @@
     }
 
     function serialiseKeybindingList(profile) {
-        console.log(profile);
         var out = {};
         ModAPI.settings.keyBindings.forEach(kb => {
             out[ModAPI.util.ustr(kb.keyDescription.getRef())] = kb.keyCode;
