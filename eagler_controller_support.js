@@ -488,11 +488,23 @@
         canTick = false;
         if (isGuiControls(ModAPI.mc.currentScreen?.getRef())) {
             EnumChatFormatting.staticVariables.RED = EnumChatFormatting.staticVariables.WHITE;
-        } else {
-            EnumChatFormatting.staticVariables.RED = RED;
-        }
 
-        if (ModAPI.mc.currentScreen) {
+            for (let k = 0; k < gamepad.buttons.length; k++) {
+                if (gamepad.buttons[k].pressed && !stateMap[k]) {
+                    ModAPI.mc.currentScreen.keyTyped(k + CONTROLLER_CONSTANT, k + CONTROLLER_CONSTANT);
+                    break;
+                }
+            }
+            for (let k = 0; k < axes.length; k++) {
+                if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
+                    var idx = axisToIdx(axes[k], k);
+                    ModAPI.mc.currentScreen.keyTyped(idx + STICK_CONSTANT, idx + STICK_CONSTANT);
+                    break;
+                }
+            }
+        } else if (ModAPI.mc.currentScreen) {
+            EnumChatFormatting.staticVariables.RED = RED;
+
             for (let k = 0; k < gamepad.buttons.length; k++) {
                 if (gamepad.buttons[k].pressed && !stateMap[k]) {
                     delayFunctionQueue.push(()=>{
@@ -517,7 +529,6 @@
                 }
             }
         }
-
 
 
         if (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) {
