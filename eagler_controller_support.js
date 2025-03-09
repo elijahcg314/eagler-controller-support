@@ -153,6 +153,7 @@
     }
 
     function serialiseKeybindingList(profile) {
+        console.log(profile);
         var out = {};
         ModAPI.settings.keyBindings.forEach(kb => {
             out[ModAPI.util.ustr(kb.keyDescription.getRef())] = kb.keyCode;
@@ -671,7 +672,7 @@
     };
     function loadProfile(profile, burn) {
         EnumChatFormatting.staticVariables.RED = RED;
-        if (CURRENT_KMAP_PROFILE === profile) {
+        if ((CURRENT_KMAP_PROFILE === profile) && !burn) {
             return;
         }
 
@@ -751,12 +752,13 @@
             uid: 14275428
         }
     ];
+
     button_utility_script2(profileButtons, "net.minecraft.client.gui.GuiControls", 0);
 
-    addEventListener("beforeunload", () => {
+    window.addEventListener("beforeunload", () => {
         serialiseKeybindingList(CURRENT_KMAP_PROFILE);
-    });
-    
+    }, true);
+
     loadProfile(PROFILE_KEYBOARD, true);
 
     var forceShiftKey = false;
