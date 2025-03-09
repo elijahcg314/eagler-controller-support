@@ -293,7 +293,7 @@
         0,
         ModAPI.util.str("Gamepad Support")
     ));
-    ModAPI.settings.keyBindings.push(hotbarNextBind.getRef());
+    ModAPI.settings.keyBindings.push(shiftClickBind.getRef());
 
     var openSettingsBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Open Settings"),
