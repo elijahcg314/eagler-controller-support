@@ -428,8 +428,8 @@
         var deltaTime = (now - oldTime) / 1000 * 60;
         oldTime = now;
         DEBUG_BIN.clear();
-        const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, 0);
-        const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, 0);
+        const STICK_LMB_BTN = Math.max(leftClickBind.keyCode - CONTROLLER_CONSTANT, -1);
+        const STICK_RMB_BTN = Math.max(rightClickBind.keyCode - CONTROLLER_CONSTANT, -1);
         const STICK_LOOK = getStickData((lookingBind.keyCode - STICK_CONSTANT) || 0);
         if (CURRENT_KMAP_PROFILE !== PROFILE_CONTROLLER) {
             return;
@@ -514,8 +514,10 @@
                     getParentScreen(ModAPI.mc.currentScreen)
                     || ModAPI.player
                 )
+                && (
+                    !isGuiControls(ModAPI.mc.currentScreen?.getRef())
+                )
             ) {
-                console.log("Opening parent screen");
                 ModAPI.mc.displayGuiScreen(
                     getParentScreen(ModAPI.mc.currentScreen)
                     ? getParentScreen(ModAPI.mc.currentScreen).getRef()
@@ -524,17 +526,19 @@
             }
         }
         if (ModAPI.mc.currentScreen) {
-            if (gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
+            if ((STICK_LMB_BTN !== -1) && gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
                 if (gamepad.buttons[STICK_LMB_BTN].pressed) {
                     simulateMouseEvent("mousedown");
                 } else {
                     simulateMouseEvent("mouseup");
                 }
             }
-            if (gamepad.buttons[STICK_RMB_BTN] && gamepad.buttons[STICK_RMB_BTN].pressed !== stateMap[STICK_RMB_BTN]) {
+            if ((STICK_RMB_BTN !== -1) && gamepad.buttons[STICK_RMB_BTN] && gamepad.buttons[STICK_RMB_BTN].pressed !== stateMap[STICK_RMB_BTN]) {
                 if (gamepad.buttons[STICK_RMB_BTN].pressed) {
+                    console.log("rmb down");
                     simulateMouseEvent("mousedown", 2);
                 } else {
+                    console.log("rmb up");
                     simulateMouseEvent("mouseup", 2);
                 }
             }
