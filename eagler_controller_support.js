@@ -414,6 +414,14 @@
         }
         return false;
     }
+    function getParentScreen(gui) {
+        var guiWrapped = gui.getCorrective();
+
+        return guiWrapped.parentScreen || 
+            guiWrapped.parentGuiScreen ||
+            guiWrapped.field_146441_g ||
+            guiWrapped.parent;
+    }
     var oldTime = Date.now();
     function gamepadLoop() {
         var now = Date.now();
@@ -500,8 +508,19 @@
             positionCursor();
             simulateMouseEvent("mousemove");
 
-            if (parentScreenBind.isPressed() && ModAPI.mc.currentScreen && (ModAPI.mc.currentScreen.parentScreen || ModAPI.player)) {
-                ModAPI.mc.displayGuiScreen(ModAPI.mc.currentScreen.parentScreen ? ModAPI.mc.currentScreen.parentScreen.getRef() : null);
+            if (parentScreenBind.isPressed()
+                && ModAPI.mc.currentScreen
+                && (
+                    getParentScreen(ModAPI.mc.currentScreen)
+                    || ModAPI.player
+                )
+            ) {
+                console.log("Opening parent screen");
+                ModAPI.mc.displayGuiScreen(
+                    getParentScreen(ModAPI.mc.currentScreen)
+                    ? getParentScreen(ModAPI.mc.currentScreen).getRef()
+                    : null
+                );
             }
         }
         if (ModAPI.mc.currentScreen) {
