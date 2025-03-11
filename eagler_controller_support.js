@@ -193,6 +193,8 @@
             unpressKb(kb);
         });
         oldClickState = false;
+        simulateMouseEvent("mouseup");
+        simulateMouseEvent("mouseup", 2);
     }
 
     function serialiseKeybindingList(profile) {
@@ -758,6 +760,14 @@
             });
         }
     };
+    const oldActionPerformed = ModAPI.hooks.methods["nmcg_GuiControls_actionPerformed"];
+    ModAPI.hooks.methods["nmcg_GuiControls_actionPerformed"] = function ($this, $button) {
+        oldActionPerformed.apply(this, [$this, $button]);
+        var btnId = $button ? ModAPI.util.wrap($button).getCorrective().id : null;
+        if (btnId === 201) {
+            unpressAllKeys();
+        }
+    };
     function loadProfile(profile, burn) {
         EnumChatFormatting.staticVariables.RED = RED;
         if ((CURRENT_KMAP_PROFILE === profile) && !burn) {
@@ -765,6 +775,7 @@
         }
 
         unpressAllKeys();
+        
         if (!burn) {
             serialiseKeybindingList(CURRENT_KMAP_PROFILE);
         }
@@ -783,8 +794,7 @@
             }
             gamepadLoop();
         }
-        simulateMouseEvent("mouseup");
-        simulateMouseEvent("mouseup", 2);
+        
         GAMEPAD_CURSOR.style.display = "none";
     }
     var KEYBOARD_BUTTON = null;
