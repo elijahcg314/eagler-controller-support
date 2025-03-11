@@ -491,8 +491,8 @@
             positionCursor();
             simulateMouseEvent("mousemove");
 
-            if (parentScreenBind.isPressed() && ModAPI.mc.currentScreen && ModAPI.mc.currentScreen.parentScreen) {
-                ModAPI.mc.displayGuiScreen(ModAPI.mc.currentScreen.parentScreen.getRef());
+            if (parentScreenBind.isPressed() && ModAPI.mc.currentScreen && (ModAPI.mc.currentScreen.parentScreen || ModAPI.player)) {
+                ModAPI.mc.displayGuiScreen(ModAPI.mc.currentScreen.parentScreen ? ModAPI.mc.currentScreen.parentScreen.getRef() : null);
             }
         }
         if (ModAPI.mc.currentScreen) {
