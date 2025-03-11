@@ -22,6 +22,7 @@
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
+    const isGuiOptionButton = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionButton").instanceOf;
     const eaglerCanvas = document.querySelector("._eaglercraftX_canvas_element");
     const GAMEPAD_CURSOR = document.createElement("div");
     const CONTROLLER_DEFAULTS = {
@@ -247,6 +248,12 @@
                     if (ModAPI.util.ustr(slider.options.enumString.getRef()) === "options.touchControlOpacity") {
                         slider.sliderValue = (profile === PROFILE_CONTROLLER) ? stickDriftSuppression : ModAPI.settings.touchControlOpacity;
                         slider.displayString = ModAPI.mc.gameSettings.getKeyBinding(slider.options.getRef()).getRef();
+                    }
+                }
+                if (slider && isGuiOptionButton(slider.getRef())) {
+                    slider = slider.getCorrective();
+                    if (ModAPI.util.ustr(slider.enumOptions.enumString.getRef()) === "options.invertMouse") {
+                        slider.displayString = ModAPI.mc.gameSettings.getKeyBinding(slider.enumOptions.getRef()).getRef();
                     }
                 }
             });
@@ -723,6 +730,9 @@
             var value = stickDriftSuppression;
             return ModAPI.util.str("Stick Drift Suppression: " + (value * 100).toFixed(0) + "%");
         }
+        if ((id === "INVERT_MOUSE") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
+            return ModAPI.util.str("Invert Stick: " + (ModAPI.settings.invertMouse ? "ON" : "OFF"));
+        }
         return oldGetSliderTextString.apply(this, [$this, option]);
     }
 
@@ -775,7 +785,7 @@
         }
 
         unpressAllKeys();
-        
+
         if (!burn) {
             serialiseKeybindingList(CURRENT_KMAP_PROFILE);
         }
