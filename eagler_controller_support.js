@@ -10,7 +10,7 @@
         gamepad = e.gamepad;
         console.log("KMAP controller connected!", gamepad);
     });
-    var isDebugBuild = true;
+    var isDebugBuild = (new URLSearchParams(location.search)).has("controller_debug_mode");
     var CURRENT_KMAP_PROFILE = "keyboard";
     const PROFILE_KEYBOARD = "keyboard";
     const PROFILE_CONTROLLER = "controller";
