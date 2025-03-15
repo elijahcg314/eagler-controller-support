@@ -21,6 +21,7 @@
     const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.45))) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
+    const isGuiChat = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiChat").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
     const isGuiOptionButton = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionButton").instanceOf;
     const eaglerCanvas = document.querySelector("._eaglercraftX_canvas_element");
@@ -46,7 +47,7 @@
         "key.smoothCamera": 0,
         "key.zoomCamera": 0,
         "key.function": 0,
-        "key.close": 8 + CONTROLLER_CONSTANT,
+        "key.close": 9 + CONTROLLER_CONSTANT,
         "key.hotbar.1": 0,
         "key.hotbar.2": 0,
         "key.hotbar.3": 0,
@@ -63,7 +64,9 @@
         "Hotbar Next": 5 + CONTROLLER_CONSTANT,
         "Shift Click": 0,
         "Open Settings": 9 + CONTROLLER_CONSTANT,
-        "Parent Screen / Back": 1 + CONTROLLER_CONSTANT
+        "Parent Screen / Back": 1 + CONTROLLER_CONSTANT,
+        "Exit Chat": 1 + CONTROLLER_CONSTANT,
+        "Send Chat": 0 + CONTROLLER_CONSTANT,
     };
     // 1 + CONTROLLER_CONSTANT = exit chat
     // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
@@ -318,6 +321,20 @@
     ));
     ModAPI.settings.keyBindings.push(parentScreenBind.getRef());
 
+    var exitChatBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Exit Chat"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(exitChatBind.getRef());
+
+    var sendChatBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Send Chat"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(sendChatBind.getRef());
+
     ModAPI.settings.keyBindings.forEach(kb => {
         if (!kb) {
             return;
@@ -540,7 +557,7 @@
                 );
             }
         }
-        if (ModAPI.mc.currentScreen) {
+        if (ModAPI.mc.currentScreen && (!ModAPI.mc.currentScreen?.buttonId)) {
             if ((STICK_LMB_BTN !== -1) && gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
                 if (gamepad.buttons[STICK_LMB_BTN].pressed) {
                     simulateMouseEvent("mousedown");
@@ -556,6 +573,15 @@
                     console.log("rmb up");
                     simulateMouseEvent("mouseup", 2);
                 }
+            }
+        }
+
+        if (isGuiChat(ModAPI.mc.currentScreen?.getRef())) {
+            if (exitChatBind.isPressed()) {
+                ModAPI.mc.displayGuiScreen(null);
+            }
+            if (sendChatBind.isPressed()) {
+                ModAPI.mc.currentScreen.keyTyped(28,28);
             }
         }
 
