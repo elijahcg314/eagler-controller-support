@@ -846,7 +846,6 @@
     }
     var KEYBOARD_BUTTON = null;
     var CONTROLLER_BUTTON = null;
-    var LOAD_DEFAULTS_BUTTON = null;
     var profileButtons = [
         {
             text: "Keyboard",
@@ -857,9 +856,6 @@
                 }
                 if (CONTROLLER_BUTTON) {
                     CONTROLLER_BUTTON.enabled = 1;
-                }
-                if (LOAD_DEFAULTS_BUTTON) {
-                    LOAD_DEFAULTS_BUTTON.enabled = 0;
                 }
             },
             getPos: (gui) => {
@@ -886,9 +882,6 @@
                 if (KEYBOARD_BUTTON) {
                     KEYBOARD_BUTTON.enabled = 1;
                 }
-                if (LOAD_DEFAULTS_BUTTON) {
-                    LOAD_DEFAULTS_BUTTON.enabled = 1;
-                }
             },
             getPos: (gui) => {
                 return [
@@ -903,26 +896,6 @@
             w: 75,
             h: 20,
             uid: 14275428
-        },
-        {
-            text: "Load Defaults",
-            click: (gui, btn) => {
-                localStorage.setItem("eagX.controlmap." + CURRENT_KMAP_PROFILE, JSON.stringify(CONTROLLER_DEFAULTS));
-                loadProfile(CURRENT_KMAP_PROFILE, true);
-            },
-            getPos: (gui) => {
-                return [
-                    (gui.width / 2) + 5 + 150 + 10,
-                    gui.height - 29
-                ]
-            },
-            init: (btn) => {
-                LOAD_DEFAULTS_BUTTON = btn;
-                btn.enabled = 1 * (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER);
-            },
-            w: 80,
-            h: 20,
-            uid: 14275144
         }
     ];
 
