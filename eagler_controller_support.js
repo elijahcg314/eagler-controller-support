@@ -11,6 +11,17 @@
         console.log("KMAP controller connected!", gamepad);
     });
     var isDebugBuild = (new URLSearchParams(location.search)).has("controller_debug_mode");
+    
+    const LF = String.fromCharCode(10);
+    ModAPI.addCredit("Eagler Controller Support Mod", "ZXMushroom63",
+        "  - Coded the mod" + LF +
+        "  - Almost had an aneurism" + LF +
+        "  - At least it works now");
+    ModAPI.addCredit("Eagler Controller Support Mod", "elijahc314",
+        "  - Playtested the mod" + LF +
+        "  - Got ZXMushroom63 to do any amount of work" + LF +
+        "  - Threw a fat list of bug reports at ZXMushroom63");
+
     var CURRENT_KMAP_PROFILE = "keyboard";
     const PROFILE_KEYBOARD = "keyboard";
     const PROFILE_CONTROLLER = "controller";
