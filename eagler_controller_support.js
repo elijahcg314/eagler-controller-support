@@ -318,6 +318,20 @@
     ));
     ModAPI.settings.keyBindings.push(parentScreenBind.getRef());
 
+    ModAPI.settings.keyBindings.forEach(kb => {
+        if (!kb) {
+            return;
+        }
+        var raw = kb.getRef();
+        var originalDefault = kb.keyCodeDefault;
+        var controllerDefault = CONTROLLER_DEFAULTS[ModAPI.util.ustr(kb.keyDescription.getRef())];
+        Object.defineProperty(raw, "$keyCodeDefault", {
+            get: function () {
+                return (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) ? controllerDefault : originalDefault;
+            }
+        });
+    });
+
     const AUTOJUMP = false;
     var canTick = true;
     var processingShiftClick = false;
