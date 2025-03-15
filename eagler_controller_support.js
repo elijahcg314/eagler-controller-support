@@ -762,7 +762,7 @@
         if (!option) {
             return oldGetSliderTextString.apply(this, [$this, option]);
         }
-        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
+        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name.getRef());
         if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
             var value = stickDriftSuppression;
             return ModAPI.util.str("Stick Drift Suppression: " + (value * 100).toFixed(0) + "%");
@@ -778,7 +778,7 @@
         if (!option) {
             return oldSetSliderValue.apply(this, [$this, option, value]);
         }
-        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name().getRef());
+        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name.getRef());
         if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
             stickDriftSuppression = value;
             return;
