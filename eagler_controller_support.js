@@ -356,6 +356,7 @@
     }
     ModAPI.addEventListener("update", () => {
         canTick = true;
+        nextCanRun = true;
         if (!ModAPI.player) {
             return;
         }
@@ -575,7 +576,7 @@
                 }
                 var pressed = Math.abs(axes[stickData.index]) > Math.abs(stickData.value * STICK_PRESS_SENSITIVITY);
                 kb.pressed = pressed * 1;
-                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + kb.pressed);
+                DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " s= " + kb.pressed + " | " + kb.pressInitial);
                 if (pressed) {
                     if (processSpecialKeys(kb)) {
                         return;
@@ -593,7 +594,7 @@
                 var keyCode = kb.keyCode - CONTROLLER_CONSTANT;
                 if (gamepad.buttons[keyCode]) {
                     kb.pressed = gamepad.buttons[keyCode].pressed * 1;
-                    DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " b= " + kb.pressed);
+                    DEBUG_BIN.add(ModAPI.util.ustr(kb.keyDescription?.getRef()) + " b= " + kb.pressed + " | " + kb.pressInitial);
                     if (gamepad.buttons[keyCode].pressed) {
                         if (processSpecialKeys(kb)) {
                             return;
@@ -807,6 +808,30 @@
             });
         }
     };
+
+    function isActiveKey() {
+        return ModAPI.settings.keyBindings.map(kb => kb.pressInitial).reduce((acc, state)=>acc || state);
+    }
+
+    const oldKeyboardGetKeyState = ModAPI.hooks.methods["nlev_Keyboard_getEventKeyState"];
+    ModAPI.hooks.methods["nlev_Keyboard_getEventKeyState"] = function () {
+        if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && isActiveKey()) {
+            return 1;
+        }
+        var x = oldKeyboardGetKeyState.apply(this, []);
+        return x;
+    };
+    var nextCanRun = true;
+    const oldKeyboardNext = ModAPI.hooks.methods["nlev_Keyboard_next"];
+    ModAPI.hooks.methods["nlev_Keyboard_next"] = function () {
+        if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && isActiveKey() && nextCanRun) {
+            nextCanRun = false;
+            return 1;
+        }
+        var x = oldKeyboardNext.apply(this, []);
+        return x;
+    };
+
     const oldActionPerformed = ModAPI.hooks.methods["nmcg_GuiControls_actionPerformed"];
     ModAPI.hooks.methods["nmcg_GuiControls_actionPerformed"] = function ($this, $button) {
         oldActionPerformed.apply(this, [$this, $button]);
