@@ -195,17 +195,21 @@
         }
     }
 
-    function unpressKb(kb) {
+    function unpressKb(kb, ghostMode) {
         kb.pressed = 0;
-        kb.wasUnpressed = 1;
+        if (ghostMode) {
+            kb.wasUnpressed = 0;
+        } else {
+            kb.wasUnpressed = 1;
+        }
         kb.pressTime = 0;
         kb.pressInitial = 0;
         kb.pressTimeRaw = 0;
     }
 
-    function unpressAllKeys() {
+    function unpressAllKeys(ghostMode) {
         ModAPI.settings.keyBindings.forEach(kb => {
-            unpressKb(kb);
+            unpressKb(kb, ghostMode);
         });
         oldClickState = false;
         simulateMouseEvent("mouseup");
@@ -550,24 +554,27 @@
             CURSOR_POS.y += stickY * coefficient;
             positionCursor();
             simulateMouseEvent("mousemove");
-
+            
             if (parentScreenBind.isPressed()
                 && ModAPI.mc.currentScreen
                 && (
                     getParentScreen(ModAPI.mc.currentScreen)
                     || ModAPI.player
                 )
-                && (
-                    !isGuiControls(ModAPI.mc.currentScreen?.getRef())
-                )
+                // && (
+                //     !isGuiControls(ModAPI.mc.currentScreen?.getRef())
+                // )
             ) {
-                ModAPI.mc.displayGuiScreen(
+                ModAPI.promisify(ModAPI.mc.displayGuiScreen)(
                     getParentScreen(ModAPI.mc.currentScreen)
                     ? getParentScreen(ModAPI.mc.currentScreen).getRef()
                     : null
                 );
             }
+        } else if (isGuiControls(ModAPI.mc.currentScreen?.getRef()) && ModAPI.mc.currentScreen?.buttonId) {
+            unpressAllKeys(true);
         }
+
         if (ModAPI.mc.currentScreen && (!ModAPI.mc.currentScreen?.buttonId)) {
             if ((STICK_LMB_BTN !== -1) && gamepad.buttons[STICK_LMB_BTN] && gamepad.buttons[STICK_LMB_BTN].pressed !== stateMap[STICK_LMB_BTN]) {
                 if (gamepad.buttons[STICK_LMB_BTN].pressed) {
@@ -578,10 +585,8 @@
             }
             if ((STICK_RMB_BTN !== -1) && gamepad.buttons[STICK_RMB_BTN] && gamepad.buttons[STICK_RMB_BTN].pressed !== stateMap[STICK_RMB_BTN]) {
                 if (gamepad.buttons[STICK_RMB_BTN].pressed) {
-                    console.log("rmb down");
                     simulateMouseEvent("mousedown", 2);
                 } else {
-                    console.log("rmb up");
                     simulateMouseEvent("mouseup", 2);
                 }
             }
@@ -592,7 +597,7 @@
                 ModAPI.mc.displayGuiScreen(null);
             }
             if (sendChatBind.isPressed()) {
-                ModAPI.mc.currentScreen.keyTyped(28,28);
+                ModAPI.mc.currentScreen.keyTyped(28, 28);
             }
         }
 
