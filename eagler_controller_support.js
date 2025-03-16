@@ -653,14 +653,14 @@
 
             for (let k = 0; k < gamepad.buttons.length; k++) {
                 if (gamepad.buttons[k].pressed && !stateMap[k]) {
-                    ModAPI.mc.currentScreen.keyTyped(k + CONTROLLER_CONSTANT, k + CONTROLLER_CONSTANT);
+                    ModAPI.promisify(ModAPI.mc.currentScreen.keyTyped)(k + CONTROLLER_CONSTANT, k + CONTROLLER_CONSTANT);
                     break;
                 }
             }
             for (let k = 0; k < axes.length; k++) {
                 if ((Math.abs(axes[k]) > STICK_PRESS_SENSITIVITY) && !stateMapAxes[k]) {
                     var idx = axisToIdx(axes[k], k);
-                    ModAPI.mc.currentScreen.keyTyped(idx + STICK_CONSTANT, idx + STICK_CONSTANT);
+                    ModAPI.promisify(ModAPI.mc.currentScreen.keyTyped)(idx + STICK_CONSTANT, idx + STICK_CONSTANT);
                     break;
                 }
             }
@@ -673,7 +673,7 @@
                         if (!ModAPI.mc.currentScreen) {
                             return;
                         }
-                        ModAPI.mc.currentScreen.keyTyped(0, k + CONTROLLER_CONSTANT);
+                        ModAPI.promisify(ModAPI.mc.currentScreen.keyTyped)(0, k + CONTROLLER_CONSTANT);
                     });
                     break;
                 }
@@ -685,7 +685,7 @@
                         if (!ModAPI.mc.currentScreen) {
                             return;
                         }
-                        ModAPI.mc.currentScreen.keyTyped(0, idx + STICK_CONSTANT);
+                        ModAPI.promisify(ModAPI.mc.currentScreen.keyTyped)(0, idx + STICK_CONSTANT);
                     });
                     break;
                 }
