@@ -11,7 +11,7 @@
         console.log("KMAP controller connected!", gamepad);
     });
     var isDebugBuild = (new URLSearchParams(location.search)).has("controller_debug_mode");
-    
+
     const LF = String.fromCharCode(10);
     ModAPI.addCredit("Eagler Controller Support Mod", "ZXMushroom63",
         "  - Coded the mod" + LF +
@@ -286,7 +286,7 @@
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(leftClickBind.getRef());
-    
+
     var rightClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
         ModAPI.util.str("Right Click"),
         CONTROLLER_CONSTANT + 11,
@@ -444,27 +444,12 @@
             kb.pressed = 1;
             kb.pressTime = 0;
         }
-        if ((desc === "key.use") && (ModAPI.mc.rightClickDelayTimer <= 1)) {
-            kb.blacklisted = true;
-
-            delayFunctionQueue.push(() => {
-                ModAPI.mc.rightClickDelayTimer = 4;
-            });
-
-            kb.pressTime = 1;
-            kb.pressed = 1;
-
-            return false;
-        } else if (desc === "key.use") {
-            kb.pressed = 0;
-            kb.pressTime = 0;
-        }
         return false;
     }
     function getParentScreen(gui) {
         var guiWrapped = gui.getCorrective();
 
-        return guiWrapped.parentScreen || 
+        return guiWrapped.parentScreen ||
             guiWrapped.parentGuiScreen ||
             guiWrapped.field_146441_g ||
             guiWrapped.parent;
@@ -554,7 +539,7 @@
             CURSOR_POS.y += stickY * coefficient;
             positionCursor();
             simulateMouseEvent("mousemove");
-            
+
             if (parentScreenBind.isPressed()
                 && ModAPI.mc.currentScreen
                 && (
@@ -567,8 +552,8 @@
             ) {
                 ModAPI.promisify(ModAPI.mc.displayGuiScreen)(
                     getParentScreen(ModAPI.mc.currentScreen)
-                    ? getParentScreen(ModAPI.mc.currentScreen).getRef()
-                    : null
+                        ? getParentScreen(ModAPI.mc.currentScreen).getRef()
+                        : null
                 );
             }
         } else if (isGuiControls(ModAPI.mc.currentScreen?.getRef()) && ModAPI.mc.currentScreen?.buttonId) {
@@ -623,9 +608,11 @@
                     if (processSpecialKeys(kb)) {
                         return;
                     }
-                    kb.pressInitial ||= (kb.wasUnpressed);
+                    kb.pressInitial ||= (kb.wasUnpressed) && !(kb.preventDefaultBehaviour);
                     kb.wasUnpressed = 0;
-                    kb.pressTime += canTick;
+                    if (!kb.preventDefaultBehaviour) {
+                        kb.pressTime += canTick;
+                    }
                     kb.pressTimeRaw += canTick;
                 } else {
                     unpressKb(kb);
@@ -641,9 +628,11 @@
                         if (processSpecialKeys(kb)) {
                             return;
                         }
-                        kb.pressInitial ||= (kb.wasUnpressed);
+                        kb.pressInitial ||= (kb.wasUnpressed) && !(kb.preventDefaultBehaviour);
                         kb.wasUnpressed = 0;
-                        kb.pressTime += canTick;
+                        if (!kb.preventDefaultBehaviour) {
+                            kb.pressTime += canTick;
+                        }
                         kb.pressTimeRaw += canTick;
                     } else {
                         unpressKb(kb);
@@ -839,6 +828,14 @@
         return oldKbIsPressed.apply(this, [$this]);
     }
 
+    const oldRightClickMouse = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.Minecraft", "rightClickMouse")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.Minecraft", "rightClickMouse")] = function ($this) {
+        if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && ModAPI.mc.rightClickDelayTimer !== 0) {
+            return;
+        }
+        return oldRightClickMouse.apply(this, [$this]);
+    }
+
     const oldRenderIngameGui = ModAPI.hooks.methods["nmcg_GuiIngame_renderGameOverlay"];
     ModAPI.hooks.methods["nmcg_GuiIngame_renderGameOverlay"] = function ($this, f) {
         oldRenderIngameGui.apply(this, [$this, f]);
@@ -852,7 +849,7 @@
     };
 
     function isActiveKey() {
-        return ModAPI.settings.keyBindings.map(kb => kb.pressInitial).reduce((acc, state)=>acc || state);
+        return ModAPI.settings.keyBindings.map(kb => kb.pressInitial).reduce((acc, state) => acc || state);
     }
 
     const oldKeyboardGetKeyState = ModAPI.hooks.methods["nlev_Keyboard_getEventKeyState"];
@@ -908,7 +905,7 @@
             }
             gamepadLoop();
         }
-        
+
         GAMEPAD_CURSOR.style.display = "none";
     }
     var KEYBOARD_BUTTON = null;
