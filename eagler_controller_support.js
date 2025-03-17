@@ -245,7 +245,7 @@
 
         ModAPI.settings.mouseSensitivity = parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile)) || 0;
 
-        stickDriftSuppression = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile)) || 0;
+        stickDriftSuppression = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile)) || 0.3;
         if (profile !== PROFILE_CONTROLLER) {
             ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile)) || 0;
         }
