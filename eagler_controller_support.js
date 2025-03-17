@@ -243,15 +243,11 @@
             }
         });
 
-        if (parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile))) {
-            ModAPI.settings.mouseSensitivity = parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile));
-        }
+        ModAPI.settings.mouseSensitivity = parseFloat(localStorage.getItem("eagX.controlmap.sens." + profile)) || 0;
 
-        if (parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile))) {
-            stickDriftSuppression = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
-            if (profile !== PROFILE_CONTROLLER) {
-                ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile));
-            }
+        stickDriftSuppression = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile)) || 0;
+        if (profile !== PROFILE_CONTROLLER) {
+            ModAPI.settings.touchControlOpacity = parseFloat(localStorage.getItem("eagX.controlmap.tc." + profile)) || 0;
         }
 
         if (isGuiControls(ModAPI.mc.currentScreen?.getRef())) {
