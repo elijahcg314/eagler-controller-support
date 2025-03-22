@@ -814,6 +814,18 @@
         return oldSetSliderValue.apply(this, [$this, option, value]);
     }
 
+    const oldGetSliderValue = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "getOptionFloatValue")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.GameSettings", "getOptionFloatValue")] = function ($this, option) {
+        if (!option) {
+            return oldGetSliderValue.apply(this, [$this, option]);
+        }
+        var id = ModAPI.util.ustr(ModAPI.util.wrap(option).getCorrective().name.getRef());
+        if ((id === "EAGLER_TOUCH_CONTROL_OPACITY") && (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER)) {
+            return stickDriftSuppression;
+        }
+        return oldGetSliderValue.apply(this, [$this, option]);
+    }
+
     const oldKbIsPressed = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.settings.KeyBinding", "isPressed")] = function ($this) {
         if ((CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) && !$this.$blacklisted) {
