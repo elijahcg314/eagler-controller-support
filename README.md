@@ -1,0 +1,2 @@
+# EaglerConsole | Controller support mod for EaglerForge
+So pretty much put this link: `https://raw.githubusercontent.com/ZXMushroom63/eagler-controller-support/main/eagler_controller_support.js` in a new build of EaglerForgeInjector.
