@@ -985,12 +985,73 @@
         return (((args[0] === 42) && forceShiftKey) * 1) || oldIsShiftEntry.apply(this, args);
     }
     const CONTROLLER_HAPTIC_FEEDBACK = {
-        //todo: add stuff here
+        "inFire": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "lightningBolt": {
+            intensity: 1,
+            duration: 0.6
+        },
+        "onFire": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "lava": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "inWall": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "drown": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "starve": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "cactus": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "outOfWorld": {
+            intensity: 1,
+            duration: 0.2
+        },
+        "generic": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "magic": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "wither": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "anvil": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "fallingBlock": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "fall": {
+            intensity: 0.05,
+            duration: 0.03,
+            scalar: true,
+        }
     }
     function vibrateController(intensity, duration) {
         if (!gamepad) {
             return;
         }
+        console.log(`[!] Vibrating controller for ${duration}s at ${intensity} intensity.`)
         gamepad.vibrationActuator.playEffect("dual-rumble", {
             startDelay: 0,
             duration: duration * 1000,
