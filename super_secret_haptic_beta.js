@@ -1051,7 +1051,7 @@
         if (!gamepad) {
             return;
         }
-        console.log(`[!] Vibrating controller for ${duration}s at ${intensity} intensity.`)
+        console.log(`[!] Vibrating controller for ${duration}s at ${intensity} intensity.`);
         gamepad.vibrationActuator.playEffect("dual-rumble", {
             startDelay: 0,
             duration: duration * 1000,
@@ -1073,7 +1073,7 @@
     const oldDamagePlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")] = function ($player, $source, $amount) {
         var player = ModAPI.util.wrap($player);
-        if (!player.isEntityInvulnerable($source)) {
+        if ($source && !player.isEntityInvulnerable($source)) {
             var key = ModAPI.util.ustr(ModAPI.util.wrap($source).damageType?.getRef());
             var conf = CONTROLLER_HAPTIC_FEEDBACK[key];
             if (key && conf) {
@@ -1084,7 +1084,7 @@
                 }
             }
         }
-        oldDamagePlayer.apply($player, [$source, $amount]);
+        oldDamagePlayer.apply(this, [$player, $source, $amount]);
     }
 
     const oldRespawnPlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")];
