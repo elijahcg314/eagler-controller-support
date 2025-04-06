@@ -360,6 +360,8 @@
         });
     });
 
+    ModAPI.settings.keyBindChat.specialPreventionCondition = () => ModAPI.mc.currentScreen !== null;
+
     const AUTOJUMP = false;
     var canTick = true;
     var processingShiftClick = false;
@@ -604,7 +606,11 @@
                     if (processSpecialKeys(kb)) {
                         return;
                     }
-                    kb.pressInitial ||= (kb.wasUnpressed) && !(kb.preventDefaultBehaviour);
+                    var preventFlag = false;
+                    if (kb.specialPreventionCondition) {
+                        preventFlag = kb.specialPreventionCondition();
+                    }
+                    kb.pressInitial ||= kb.wasUnpressed && !kb.preventDefaultBehaviour && !preventFlag;
                     kb.wasUnpressed = 0;
                     if (!kb.preventDefaultBehaviour) {
                         kb.pressTime += canTick;
@@ -624,7 +630,11 @@
                         if (processSpecialKeys(kb)) {
                             return;
                         }
-                        kb.pressInitial ||= (kb.wasUnpressed) && !(kb.preventDefaultBehaviour);
+                        var preventFlag = false;
+                        if (kb.specialPreventionCondition) {
+                            preventFlag = kb.specialPreventionCondition();
+                        }
+                        kb.pressInitial ||= kb.wasUnpressed && !kb.preventDefaultBehaviour && !preventFlag;
                         kb.wasUnpressed = 0;
                         if (!kb.preventDefaultBehaviour) {
                             kb.pressTime += canTick;
@@ -1088,7 +1098,7 @@
     }
 
     const oldRespawnPlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")];
-    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")] = function ($player, ) {
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")] = function ($player,) {
         stopControllerVibration();
         oldRespawnPlayer.apply($player, []);
     }
