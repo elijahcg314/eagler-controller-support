@@ -1,6 +1,6 @@
 (function () {
     ModAPI.meta.title("🎮 EaglerConsole | Controller Support");
-    ModAPI.meta.version("v1.1");
+    ModAPI.meta.version("v1.2");
     ModAPI.meta.icon("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAAAXNSR0IArs4c6QAAAPhJREFUOE+NkrEKgzAQhv+AOAguOnTQ1yjduoiufQkfy5foanHpVvoaOhR0EhxUSMnRhCRNSrNcjrv77v7kGD6nrmsu78I2TcN03xenpL7veZZlej6GYTB8FX9VwKGleJ7njOnF0zRRUZqmZJdlQRiGCIKA/OoBtCcAZQncbgRRAFE8zzO2bUOSJATZ9x3ruiKKIjXN8X7B83wl3wkQgTiO1RSGDssxACKmSyiKAl3XUQljjHHOuS3xCyAbyGJpBWAcR25L9AIEyJ5AAnSJPwGub/xbgvxj/c18u2LsgfwasSCu17chJMHeRFd3CdMBahP1oLj7uvvy3totwxHXpk7GAAAAAElFTkSuQmCC");
     ModAPI.meta.credits("By ZXMushroom63 & elijahcg314");
     ModAPI.meta.description("Adds various keybindings and features for controller support.");
@@ -29,7 +29,7 @@
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
     var stickDriftSuppression = 0;
-    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.45))) ? x : 0);
+    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.95))) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiChat = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiChat").instanceOf;
