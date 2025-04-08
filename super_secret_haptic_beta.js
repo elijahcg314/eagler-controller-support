@@ -29,7 +29,7 @@
     const STICK_CONSTANT = 0x3100;
     const STICK_PRESS_SENSITIVITY = 0.5;
     var stickDriftSuppression = 0;
-    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.95))) ? x : 0);
+    const STICK_DRIFT_SUPPRESSION_FN = (x => ((Math.abs(x) > (stickDriftSuppression * 0.76))) ? x : 0);
     const DPAD_SPEED = 0.65;
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiChat = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiChat").instanceOf;
