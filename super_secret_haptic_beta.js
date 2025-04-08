@@ -1098,8 +1098,8 @@
     }
 
     const oldRespawnPlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")];
-    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")] = function ($player,) {
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")] = function ($player) {
         stopControllerVibration();
-        oldRespawnPlayer.apply($player, []);
+        oldRespawnPlayer.apply(this, [$player]);
     }
 })();
