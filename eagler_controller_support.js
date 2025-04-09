@@ -1,6 +1,6 @@
 (function () {
     ModAPI.meta.title("🎮 EaglerConsole | Controller Support");
-    ModAPI.meta.version("v1.2");
+    ModAPI.meta.version("v1.2b-haptic-0");
     ModAPI.meta.icon("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAAAXNSR0IArs4c6QAAAPhJREFUOE+NkrEKgzAQhv+AOAguOnTQ1yjduoiufQkfy5foanHpVvoaOhR0EhxUSMnRhCRNSrNcjrv77v7kGD6nrmsu78I2TcN03xenpL7veZZlej6GYTB8FX9VwKGleJ7njOnF0zRRUZqmZJdlQRiGCIKA/OoBtCcAZQncbgRRAFE8zzO2bUOSJATZ9x3ruiKKIjXN8X7B83wl3wkQgTiO1RSGDssxACKmSyiKAl3XUQljjHHOuS3xCyAbyGJpBWAcR25L9AIEyJ5AAnSJPwGub/xbgvxj/c18u2LsgfwasSCu17chJMHeRFd3CdMBahP1oLj7uvvy3totwxHXpk7GAAAAAElFTkSuQmCC");
     ModAPI.meta.credits("By ZXMushroom63 & elijahcg314");
     ModAPI.meta.description("Adds various keybindings and features for controller support.");
@@ -78,6 +78,7 @@
         "Parent Screen / Back": 1 + CONTROLLER_CONSTANT,
         "Exit Chat": 1 + CONTROLLER_CONSTANT,
         "Send Chat": 0 + CONTROLLER_CONSTANT,
+        "Sneak #2": 1 + CONTROLLER_CONSTANT,
     };
     // 1 + CONTROLLER_CONSTANT = exit chat
     // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
@@ -345,6 +346,23 @@
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(sendChatBind.getRef());
+
+    var secondaryCrouchBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Sneak #2"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(secondaryCrouchBind.getRef());
+
+    ModAPI.settings.keyBindSneak._pressed = 0;
+    Object.defineProperty(ModAPI.settings.keyBindSneak.getRef(), "$pressed", {
+        get: function () {
+            return this.$_pressed || secondaryCrouchBind.pressed;
+        },
+        set: function (val) {
+            this.$_pressed = val;
+        }
+    });
 
     ModAPI.settings.keyBindings.forEach(kb => {
         if (!kb) {
@@ -993,5 +1011,114 @@
     const oldIsShiftEntry = ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"];
     ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"] = function (...args) {
         return (((args[0] === 42) && forceShiftKey) * 1) || oldIsShiftEntry.apply(this, args);
+    }
+    const VIBRATION_STRENGTH_MULTIPLIER = 0.0;
+    const CONTROLLER_HAPTIC_FEEDBACK = {
+        "inFire": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "lightningBolt": {
+            intensity: 1,
+            duration: 0.6
+        },
+        "onFire": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "lava": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "inWall": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "drown": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "starve": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "cactus": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "outOfWorld": {
+            intensity: 1,
+            duration: 0.2
+        },
+        "generic": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "magic": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "wither": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "anvil": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "fallingBlock": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "fall": {
+            intensity: 0.05,
+            duration: 0.03,
+            scalar: true,
+        }
+    }
+    function vibrateController(intensity, duration) {
+        if (!gamepad) {
+            return;
+        }
+        console.log(`[!] Vibrating controller for ${duration}s at ${intensity} intensity.`);
+        gamepad.vibrationActuator.playEffect("dual-rumble", {
+            startDelay: 0,
+            duration: duration * 1000,
+            weakMagnitude: intensity * VIBRATION_STRENGTH_MULTIPLIER,
+            strongMagnitude: intensity * VIBRATION_STRENGTH_MULTIPLIER,
+        });
+    }
+    function stopControllerVibration() {
+        if (!gamepad) {
+            return;
+        }
+        gamepad.vibrationActuator.playEffect("dual-rumble", {
+            startDelay: 0,
+            duration: 0,
+            weakMagnitude: 0,
+            strongMagnitude: 0,
+        });
+    }
+    const oldDamagePlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")] = function ($player, $source, $amount) {
+        var player = ModAPI.util.wrap($player);
+        if ($source && !player.isEntityInvulnerable($source)) {
+            var key = ModAPI.util.ustr(ModAPI.util.wrap($source).damageType?.getRef());
+            var conf = CONTROLLER_HAPTIC_FEEDBACK[key];
+            if (key && conf) {
+                if (conf.scalar) {
+                    vibrateController(conf.intensity * $amount, conf.duration * $amount);
+                } else {
+                    vibrateController(conf.intensity, conf.duration);
+                }
+            }
+        }
+        oldDamagePlayer.apply(this, [$player, $source, $amount]);
+    }
+
+    const oldRespawnPlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")];
+    ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "respawnPlayer")] = function ($player) {
+        stopControllerVibration();
+        oldRespawnPlayer.apply(this, [$player]);
     }
 })();

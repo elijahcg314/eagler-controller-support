@@ -78,6 +78,7 @@
         "Parent Screen / Back": 1 + CONTROLLER_CONSTANT,
         "Exit Chat": 1 + CONTROLLER_CONSTANT,
         "Send Chat": 0 + CONTROLLER_CONSTANT,
+        "Sneak #2": 1 + CONTROLLER_CONSTANT,
     };
     // 1 + CONTROLLER_CONSTANT = exit chat
     // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
@@ -345,6 +346,23 @@
         ModAPI.util.str("Gamepad Support")
     ));
     ModAPI.settings.keyBindings.push(sendChatBind.getRef());
+
+    var secondaryCrouchBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+        ModAPI.util.str("Sneak #2"),
+        0,
+        ModAPI.util.str("Gamepad Support")
+    ));
+    ModAPI.settings.keyBindings.push(secondaryCrouchBind.getRef());
+    
+    ModAPI.settings.keyBindSneak._pressed = 0;
+    Object.defineProperty(ModAPI.settings.keyBindSneak.getRef(), "$pressed", {
+        get: function () {
+            return this.$_pressed || secondaryCrouchBind.pressed;
+        },
+        set: function (val) {
+            this.$_pressed = val;
+        }
+    });
 
     ModAPI.settings.keyBindings.forEach(kb => {
         if (!kb) {
@@ -994,6 +1012,7 @@
     ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"] = function (...args) {
         return (((args[0] === 42) && forceShiftKey) * 1) || oldIsShiftEntry.apply(this, args);
     }
+    const VIBRATION_STRENGTH_MULTIPLIER = 1.0;
     const CONTROLLER_HAPTIC_FEEDBACK = {
         "inFire": {
             intensity: 0.6,
@@ -1065,8 +1084,8 @@
         gamepad.vibrationActuator.playEffect("dual-rumble", {
             startDelay: 0,
             duration: duration * 1000,
-            weakMagnitude: intensity,
-            strongMagnitude: intensity,
+            weakMagnitude: intensity * VIBRATION_STRENGTH_MULTIPLIER,
+            strongMagnitude: intensity * VIBRATION_STRENGTH_MULTIPLIER,
         });
     }
     function stopControllerVibration() {
