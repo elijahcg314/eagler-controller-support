@@ -1024,7 +1024,7 @@
             duration: 0.2
         },
         "cactus": {
-            intensity: 0.3,
+            intensity: 0.6,
             duration: 0.2
         },
         "outOfWorld": {
