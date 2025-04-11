@@ -233,10 +233,11 @@
 
     function deserialiseKeybindingList(profile) {
         var input = localStorage.getItem("eagX.controlmap." + profile);
-        if (!input) {
-            return;
+        if (!input && profile === PROFILE_CONTROLLER) {
+            input = CONTROLLER_DEFAULTS;
+        } else {
+            input = JSON.parse(input);
         }
-        input = JSON.parse(input);
         ModAPI.settings.keyBindings.forEach(kb => {
             const keybinding = input[ModAPI.util.ustr(kb.keyDescription.getRef())];
             if (typeof keybinding === "number") {
@@ -1012,7 +1013,7 @@
     ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"] = function (...args) {
         return (((args[0] === 42) && forceShiftKey) * 1) || oldIsShiftEntry.apply(this, args);
     }
-    const VIBRATION_STRENGTH_MULTIPLIER = 1.0;
+    const VIBRATION_STRENGTH_MULTIPLIER = 2.0;
     const CONTROLLER_HAPTIC_FEEDBACK = {
         "inFire": {
             intensity: 0.6,
@@ -1043,7 +1044,7 @@
             duration: 0.2
         },
         "cactus": {
-            intensity: 0.6,
+            intensity: 0.3,
             duration: 0.2
         },
         "outOfWorld": {

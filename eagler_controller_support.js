@@ -233,10 +233,11 @@
 
     function deserialiseKeybindingList(profile) {
         var input = localStorage.getItem("eagX.controlmap." + profile);
-        if (!input) {
-            return;
+        if (!input && profile === PROFILE_CONTROLLER) {
+            input = CONTROLLER_DEFAULTS;
+        } else {
+            input = JSON.parse(input);
         }
-        input = JSON.parse(input);
         ModAPI.settings.keyBindings.forEach(kb => {
             const keybinding = input[ModAPI.util.ustr(kb.keyDescription.getRef())];
             if (typeof keybinding === "number") {
