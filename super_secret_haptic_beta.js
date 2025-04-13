@@ -1075,6 +1075,42 @@
             intensity: 0.05,
             duration: 0.03,
             scalar: true,
+        },
+        "mob": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "player": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "fireball": {
+            intensity: 1,
+            duration: 0.6
+        },
+        "thrown": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "arrow": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "indirectMagic": {
+            intensity: 0.3,
+            duration: 0.2
+        },
+        "thorns": {
+            intensity: 0.6,
+            duration: 0.2
+        },
+        "explosion.player": {
+            intensity: 1,
+            duration: 0.6
+        },
+        "explosion": {
+            intensity: 1,
+            duration: 0.6
         }
     }
     function vibrateController(intensity, duration) {
