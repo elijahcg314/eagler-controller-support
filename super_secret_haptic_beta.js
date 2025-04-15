@@ -34,6 +34,7 @@
     const isGuiControls = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiControls").instanceOf;
     const isGuiChat = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiChat").instanceOf;
     const isGuiSlider = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionSlider").instanceOf;
+    const isKeyBinding = ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").instanceOf;
     const isGuiOptionButton = ModAPI.reflect.getClassById("net.minecraft.client.gui.GuiOptionButton").instanceOf;
     const eaglerCanvas = document.querySelector("._eaglercraftX_canvas_element");
     const GAMEPAD_CURSOR = document.createElement("div");
@@ -78,7 +79,7 @@
         "Parent Screen / Back": 1 + CONTROLLER_CONSTANT,
         "Exit Chat": 1 + CONTROLLER_CONSTANT,
         "Send Chat": 0 + CONTROLLER_CONSTANT,
-        "Sneak #2": 1 + CONTROLLER_CONSTANT,
+        "Sneak 2": 1 + CONTROLLER_CONSTANT,
     };
     // 1 + CONTROLLER_CONSTANT = exit chat
     // 0 + CONTROLLER_CONSTANT = chat simulate enter key (.keyTyped)
@@ -278,89 +279,62 @@
         ModAPI.reflect.getClassByName("KeyBinding").staticMethods.resetKeyBindingArrayAndHash.method();
     }
 
-    var leftClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Left Click"),
-        CONTROLLER_CONSTANT + 10,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var kbIdx = 1;
+    const mkKb = function (name, val) {
+        var x = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
+            ModAPI.util.str(name),
+            val,
+            ModAPI.util.str("Gamepad Support")
+        ));
+        x.gpApiId = kbIdx;
+        kbIdx++;
+        return x;
+    }
+
+
+    var leftClickBind = mkKb("Left Click", CONTROLLER_CONSTANT + 10);
     ModAPI.settings.keyBindings.push(leftClickBind.getRef());
 
-    var rightClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Right Click"),
-        CONTROLLER_CONSTANT + 11,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var rightClickBind = mkKb("Right Click", CONTROLLER_CONSTANT + 11);
     ModAPI.settings.keyBindings.push(rightClickBind.getRef());
 
-    var lookingBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Looking (any direction)"),
-        STICK_CONSTANT + 0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var lookingBind = mkKb("Looking (any direction)", STICK_CONSTANT + 0);
     ModAPI.settings.keyBindings.push(lookingBind.getRef());
 
-    var hotbarPreviousBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Hotbar Previous"),
-        CONTROLLER_CONSTANT + 4,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var hotbarPreviousBind = mkKb("Hotbar Previous", CONTROLLER_CONSTANT + 4);
     ModAPI.settings.keyBindings.push(hotbarPreviousBind.getRef());
 
-    var hotbarNextBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Hotbar Next"),
-        CONTROLLER_CONSTANT + 5,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var hotbarNextBind = mkKb("Hotbar Next", CONTROLLER_CONSTANT + 5);
     ModAPI.settings.keyBindings.push(hotbarNextBind.getRef());
 
-    var shiftClickBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Shift Click"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var shiftClickBind = mkKb("Shift Click", 0);
     ModAPI.settings.keyBindings.push(shiftClickBind.getRef());
 
-    var openSettingsBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Open Settings"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var openSettingsBind = mkKb("Open Settings", 0);
     ModAPI.settings.keyBindings.push(openSettingsBind.getRef());
 
-    var parentScreenBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Parent Screen / Back"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var parentScreenBind = mkKb("Parent Screen / Back", 0);
     ModAPI.settings.keyBindings.push(parentScreenBind.getRef());
 
-    var exitChatBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Exit Chat"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var exitChatBind = mkKb("Exit Chat", 0);
     ModAPI.settings.keyBindings.push(exitChatBind.getRef());
 
-    var sendChatBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Send Chat"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var sendChatBind = mkKb("Send Chat", 0);
     ModAPI.settings.keyBindings.push(sendChatBind.getRef());
 
-    var secondaryCrouchBind = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
-        ModAPI.util.str("Sneak #2"),
-        0,
-        ModAPI.util.str("Gamepad Support")
-    ));
+    var secondaryCrouchBind = mkKb("Sneak 2", 0);
     ModAPI.settings.keyBindings.push(secondaryCrouchBind.getRef());
-    
+
     ModAPI.settings.keyBindSneak._pressed = 0;
+    var exitChatFix = false;
     Object.defineProperty(ModAPI.settings.keyBindSneak.getRef(), "$pressed", {
         get: function () {
-            return this.$_pressed || secondaryCrouchBind.pressed;
+            return !exitChatFix && (this.$_pressed || secondaryCrouchBind.pressed);
         },
         set: function (val) {
+            if (!val) {
+                exitChatFix = false;
+            }
             this.$_pressed = val;
         }
     });
@@ -380,6 +354,7 @@
     });
 
     ModAPI.settings.keyBindChat.specialPreventionCondition = () => ModAPI.mc.currentScreen !== null;
+    secondaryCrouchBind.specialPreventionCondition = () => isGuiChat(ModAPI.mc.currentScreen?.getRef())
 
     const AUTOJUMP = false;
     var canTick = true;
@@ -472,6 +447,7 @@
             guiWrapped.parent;
     }
     var oldTime = Date.now();
+    var oldGpIdx = -1;
     function gamepadLoop() {
         var now = Date.now();
         var deltaTime = (now - oldTime) / 1000 * 60;
@@ -495,6 +471,12 @@
 
         if (!gamepad?.connected) {
             return requestAnimationFrame(gamepadLoop);
+        }
+
+        const newGpIdx = navigator.getGamepads().findIndex(x => x && x.connected) + 1;
+        if (oldGpIdx !== newGpIdx) {
+            gamepadViewer.src = "https://gamepadviewer.com/?p=" + newGpIdx;
+            oldGpIdx = newGpIdx;
         }
 
         DEBUG_BIN.add("RAW / " + gamepad.axes.toString());
@@ -597,6 +579,7 @@
         if (isGuiChat(ModAPI.mc.currentScreen?.getRef())) {
             if (exitChatBind.isPressed()) {
                 ModAPI.mc.displayGuiScreen(null);
+                exitChatFix = true;
             }
             if (sendChatBind.isPressed()) {
                 ModAPI.mc.currentScreen.keyTyped(28, 28);
@@ -940,7 +923,12 @@
                     break;
                 }
             }
+            if (gamepadViewer) {
+                gamepadViewer.style.display = "block";
+            }
             gamepadLoop();
+        } else if (gamepadViewer) {
+            gamepadViewer.style.display = "none";
         }
 
         GAMEPAD_CURSOR.style.display = "none";
@@ -1148,6 +1136,9 @@
                 } else {
                     vibrateController(conf.intensity, conf.duration);
                 }
+            } else {
+                alert(`FOUND NO VIBRATION WITH KEY: ${key}`);
+                console.log(key, conf);
             }
         }
         oldDamagePlayer.apply(this, [$player, $source, $amount]);
@@ -1158,4 +1149,35 @@
         stopControllerVibration();
         oldRespawnPlayer.apply(this, [$player]);
     }
+
+    const oldSrt1 = ModAPI.hooks.methods.ju_Arrays_sort1;
+    ModAPI.hooks.methods.ju_Arrays_sort1 = function ($a) {
+        oldSrt1.apply(this, [$a]);
+        if ($a.data && $a.data.length > 0 && $a.data.find(x => isKeyBinding(x))) {
+            $a.data.sort((a, b) => {
+                if ((!a.$gpApiId) || (!b.$gpApiId)) {
+                    return 0;
+                }
+                return (a.$gpApiId) - (b.$gpApiId);
+            });
+        }
+    }
+
+    var gamepadViewer = document.createElement("iframe");
+    gamepadViewer.width = "750px";
+    gamepadViewer.height = "630px";
+
+    gamepadViewer.style = `
+    position: fixed;
+    z-index: 999;
+    bottom: 0;
+    left: 0;
+    scale: 0.2;
+    border: 0;
+    transform: translateX(-200%) translateY(200%);
+    display: none;
+    opacity: 0.5;
+    pointer-events: none;
+    `;
+    document.documentElement.appendChild(gamepadViewer);
 })();
