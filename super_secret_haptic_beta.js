@@ -354,7 +354,7 @@
     });
 
     ModAPI.settings.keyBindChat.specialPreventionCondition = () => ModAPI.mc.currentScreen !== null;
-    secondaryCrouchBind.specialPreventionCondition = () => isGuiChat(ModAPI.mc.currentScreen?.getRef())
+    //secondaryCrouchBind.specialPreventionCondition = () => isGuiChat(ModAPI.mc.currentScreen?.getRef());
 
     const AUTOJUMP = false;
     var canTick = true;
@@ -1126,6 +1126,7 @@
     }
     const oldDamagePlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")] = function ($player, $source, $amount) {
+        console.log("t");
         var player = ModAPI.util.wrap($player);
         if ($source && !player.isEntityInvulnerable($source)) {
             var key = ModAPI.util.ustr(ModAPI.util.wrap($source).damageType?.getRef());
@@ -1136,6 +1137,7 @@
                 } else {
                     vibrateController(conf.intensity, conf.duration);
                 }
+                console.log(key + " : success");
             } else {
                 alert(`FOUND NO VIBRATION WITH KEY: ${key}`);
                 console.log(key, conf);
