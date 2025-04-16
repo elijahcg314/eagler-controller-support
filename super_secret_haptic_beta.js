@@ -4,6 +4,9 @@
     ModAPI.meta.icon("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAAAXNSR0IArs4c6QAAAPhJREFUOE+NkrEKgzAQhv+AOAguOnTQ1yjduoiufQkfy5foanHpVvoaOhR0EhxUSMnRhCRNSrNcjrv77v7kGD6nrmsu78I2TcN03xenpL7veZZlej6GYTB8FX9VwKGleJ7njOnF0zRRUZqmZJdlQRiGCIKA/OoBtCcAZQncbgRRAFE8zzO2bUOSJATZ9x3ruiKKIjXN8X7B83wl3wkQgTiO1RSGDssxACKmSyiKAl3XUQljjHHOuS3xCyAbyGJpBWAcR25L9AIEyJ5AAnSJPwGub/xbgvxj/c18u2LsgfwasSCu17chJMHeRFd3CdMBahP1oLj7uvvy3totwxHXpk7GAAAAAElFTkSuQmCC");
     ModAPI.meta.credits("By ZXMushroom63 & elijahcg314");
     ModAPI.meta.description("Adds various keybindings and features for controller support.");
+    ModAPI.meta.config(()=>{
+        console.log('button clicekd');
+    });
     ModAPI.require("player");
     var gamepad = null;
     window.addEventListener("gamepadconnected", (e) => {
