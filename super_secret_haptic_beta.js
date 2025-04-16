@@ -1001,104 +1001,12 @@
     ModAPI.hooks.methods["nlevi_PlatformInput_keyboardIsKeyDown"] = function (...args) {
         return (((args[0] === 42) && forceShiftKey) * 1) || oldIsShiftEntry.apply(this, args);
     }
-    const VIBRATION_STRENGTH_MULTIPLIER = 2.0;
+    const VIBRATION_STRENGTH_MULTIPLIER = 2.5;
     const CONTROLLER_HAPTIC_FEEDBACK = {
-        "inFire": {
-            intensity: 0.6,
-            duration: 0.2
-        },
-        "lightningBolt": {
-            intensity: 1,
-            duration: 0.6
-        },
-        "onFire": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "lava": {
-            intensity: 0.6,
-            duration: 0.2
-        },
-        "inWall": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "drown": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "starve": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "cactus": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "outOfWorld": {
-            intensity: 1,
-            duration: 0.2
-        },
         "generic": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "magic": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "wither": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "anvil": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "fallingBlock": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "fall": {
             intensity: 0.05,
-            duration: 0.03,
+            duration: 0.04,
             scalar: true,
-        },
-        "mob": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "player": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "fireball": {
-            intensity: 1,
-            duration: 0.6
-        },
-        "thrown": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "arrow": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "indirectMagic": {
-            intensity: 0.3,
-            duration: 0.2
-        },
-        "thorns": {
-            intensity: 0.6,
-            duration: 0.2
-        },
-        "explosion.player": {
-            intensity: 1,
-            duration: 0.6
-        },
-        "explosion": {
-            intensity: 1,
-            duration: 0.6
         }
     }
     function vibrateController(intensity, duration) {
@@ -1126,10 +1034,9 @@
     }
     const oldDamagePlayer = ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")];
     ModAPI.hooks.methods[ModAPI.util.getMethodFromPackage("net.minecraft.client.entity.EntityPlayerSP", "damageEntity")] = function ($player, $source, $amount) {
-        console.log("t");
         var player = ModAPI.util.wrap($player);
-        if ($source && !player.isEntityInvulnerable($source)) {
-            var key = ModAPI.util.ustr(ModAPI.util.wrap($source).damageType?.getRef());
+        if ($source && $amount > 0) {
+            var key = "generic";
             var conf = CONTROLLER_HAPTIC_FEEDBACK[key];
             if (key && conf) {
                 if (conf.scalar) {
