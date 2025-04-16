@@ -284,7 +284,7 @@
 
     var kbIdx = 1;
     const mkKb = function (name, val, cat) {
-        var hasSortingBind = !!cat;
+        var hasSortingBind = !cat;
         cat ||= "Gamepad Support";
         var x = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
             ModAPI.util.str(name),
@@ -295,6 +295,7 @@
             x.gpApiId = kbIdx;
             kbIdx++;
         }
+        x.isGp = 1;
         return x;
     }
 
@@ -1077,6 +1078,18 @@
                 return (a.$gpApiId) - (b.$gpApiId);
             });
         }
+    }
+
+    var f = 30;
+    const oldDrawEntry = ModAPI.hooks.methods.nmcg_GuiKeyBindingList$KeyEntry_drawEntry;
+    ModAPI.hooks.methods.nmcg_GuiKeyBindingList$KeyEntry_drawEntry = function (...args) {
+        var self = ModAPI.util.wrap(args[0]).getCorrective();
+        if (f > 0) {
+            console.log(self);
+            f--;
+        }
+        self.btnChangeKeyBinding.enabled = self.keybinding.isGp ? (CURRENT_KMAP_PROFILE === PROFILE_CONTROLLER) : 1;
+        oldDrawEntry.apply(this, args);
     }
 
     var gamepadViewer = document.createElement("iframe");
