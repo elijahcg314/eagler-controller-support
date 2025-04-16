@@ -283,11 +283,12 @@
     }
 
     var kbIdx = 1;
-    const mkKb = function (name, val) {
+    const mkKb = function (name, val, cat) {
+        cat ||= "Gamepad Support";
         var x = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
             ModAPI.util.str(name),
             val,
-            ModAPI.util.str("Gamepad Support")
+            ModAPI.util.str(cat)
         ));
         x.gpApiId = kbIdx;
         kbIdx++;
