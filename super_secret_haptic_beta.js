@@ -79,7 +79,7 @@
         "Hotbar Next": 5 + CONTROLLER_CONSTANT,
         "Shift Click": 0,
         "Open Settings": 9 + CONTROLLER_CONSTANT,
-        "Parent Screen / Back": 1 + CONTROLLER_CONSTANT,
+        "Previous Screen": 1 + CONTROLLER_CONSTANT,
         "Exit Chat": 1 + CONTROLLER_CONSTANT,
         "Send Chat": 0 + CONTROLLER_CONSTANT,
         "Sneak 2": 1 + CONTROLLER_CONSTANT,
@@ -284,14 +284,17 @@
 
     var kbIdx = 1;
     const mkKb = function (name, val, cat) {
+        var hasSortingBind = !!cat;
         cat ||= "Gamepad Support";
         var x = ModAPI.util.wrap(ModAPI.reflect.getClassById("net.minecraft.client.settings.KeyBinding").constructors[0](
             ModAPI.util.str(name),
             val,
             ModAPI.util.str(cat)
         ));
-        x.gpApiId = kbIdx;
-        kbIdx++;
+        if (hasSortingBind) {
+            x.gpApiId = kbIdx;
+            kbIdx++;
+        }
         return x;
     }
 
@@ -317,7 +320,7 @@
     var openSettingsBind = mkKb("Open Settings", 0);
     ModAPI.settings.keyBindings.push(openSettingsBind.getRef());
 
-    var parentScreenBind = mkKb("Parent Screen / Back", 0);
+    var parentScreenBind = mkKb("Previous Screen", 0);
     ModAPI.settings.keyBindings.push(parentScreenBind.getRef());
 
     var exitChatBind = mkKb("Exit Chat", 0);
@@ -326,7 +329,7 @@
     var sendChatBind = mkKb("Send Chat", 0);
     ModAPI.settings.keyBindings.push(sendChatBind.getRef());
 
-    var secondaryCrouchBind = mkKb("Sneak 2", 0);
+    var secondaryCrouchBind = mkKb("Sneak 2", 0, "key.categories.movement");
     ModAPI.settings.keyBindings.push(secondaryCrouchBind.getRef());
 
     ModAPI.settings.keyBindSneak._pressed = 0;
