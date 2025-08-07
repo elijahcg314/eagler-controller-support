@@ -1092,26 +1092,23 @@
         oldDrawEntry.apply(this, args);
     }
 
-var gamepadViewer = document.createElement("iframe");
-gamepadViewer.width = "750px";
-gamepadViewer.height = "630px";
+    var gamepadViewer = document.createElement("iframe");
+    gamepadViewer.width = "750px";
+    gamepadViewer.height = "630px";
 
-gamepadViewer.style = `
+    gamepadViewer.style = `
     position: fixed;
     z-index: 999;
     bottom: 0;
     left: 0;
+    scale: 0.3;
     border: 0;
-    opacity: 0.5;
+    transform: translateX(-200%) translateY(200%);
+    display: none;
+    opacity: 0.75;
     pointer-events: none;
-    transform-origin: bottom left;
-    /* scale up by 2.5 times */
-    scale: 2.5;
-    /* Adjust translate to keep same visible position */
-    transform: translateX(-40%) translateY(40%);
-    display: block;
-`;
-
-document.documentElement.appendChild(gamepadViewer);
+    `;
+    document.documentElement.appendChild(gamepadViewer);
+})();
 
 })();
