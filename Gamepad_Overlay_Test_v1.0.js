@@ -1101,7 +1101,7 @@
     z-index: 999;
     bottom: 0;
     left: 0;
-    scale: 0.3;
+    scale: 0.2;
     border: 0;
     transform: translateX(-200%) translateY(200%);
     display: none;
