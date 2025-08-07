@@ -1110,5 +1110,3 @@
     `;
     document.documentElement.appendChild(gamepadViewer);
 })();
-
-})();
