@@ -1093,8 +1093,8 @@
     }
 
 var gamepadViewer = document.createElement("iframe");
-gamepadViewer.width = (750 * 2.5) + "px"; // 1875px
-gamepadViewer.height = (630 * 2.5) + "px"; // 1575px
+gamepadViewer.width = "750px";
+gamepadViewer.height = "630px";
 
 gamepadViewer.style = `
     position: fixed;
@@ -1102,16 +1102,14 @@ gamepadViewer.style = `
     bottom: 0;
     left: 0;
     border: 0;
-    display: block;
     opacity: 0.5;
     pointer-events: none;
     transform-origin: bottom left;
-    /* Keep fully inside screen by shifting left and up */
-    transform: translateX(0) translateY(0);
-    max-width: 100vw;
-    max-height: 100vh;
-    box-sizing: border-box;
-    overflow: hidden;
+    /* scale up by 2.5 times */
+    scale: 2.5;
+    /* Adjust translate to keep same visible position */
+    transform: translateX(-40%) translateY(40%);
+    display: block;
 `;
 
 document.documentElement.appendChild(gamepadViewer);
