@@ -477,13 +477,13 @@
             gamepad = navigator.getGamepads()[gamepad.index];
         }
 
-       if (!gamepad?.connected) {
+if (!gamepad?.connected) {
     return requestAnimationFrame(gamepadLoop);
 }
 
 const newGpIdx = navigator.getGamepads().findIndex(x => x && x.connected) + 1;
 if (oldGpIdx !== newGpIdx) {
-    gamepadViewer.src = "https://gamepad.e7d.io/?triggers=meter&color=red&background=transparent&p=" + newGpIdx;
+    gamepadViewer.src = "https://gamepadviewer.com/?p=1&s=5&smeter=1&sc=2&dz=0&op=0.75&delay=0&soffset=22";
     oldGpIdx = newGpIdx;
 }
 
