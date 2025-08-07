@@ -477,19 +477,19 @@
             gamepad = navigator.getGamepads()[gamepad.index];
         }
 
-if (!gamepad?.connected) {
-    return requestAnimationFrame(gamepadLoop);
-}
+        if (!gamepad?.connected) {
+            return requestAnimationFrame(gamepadLoop);
+        }
 
-const newGpIdx = navigator.getGamepads().findIndex(x => x && x.connected) + 1;
-if (oldGpIdx !== newGpIdx) {
-    gamepadViewer.src = "https://gamepadviewer.com/?p=1&s=5&smeter=1&sc=2&dz=0&op=0.75&delay=0&soffset=22";
-    oldGpIdx = newGpIdx;
-}
+        const newGpIdx = navigator.getGamepads().findIndex(x => x && x.connected) + 1;
+        if (oldGpIdx !== newGpIdx) {
+            gamepadViewer.src = "https://gamepadviewer.com/?p=1&s=8&smeter=1" + newGpIdx;
+            oldGpIdx = newGpIdx;
+        }
 
-DEBUG_BIN.add("RAW / " + gamepad.axes.toString());
-var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
-DEBUG_BIN.add("SUP / " + axes.toString());
+        DEBUG_BIN.add("RAW / " + gamepad.axes.toString());
+        var axes = gamepad.axes.map(STICK_DRIFT_SUPPRESSION_FN);
+        DEBUG_BIN.add("SUP / " + axes.toString());
 
         if (ModAPI.player && !ModAPI.mc.currentScreen) {
             GAMEPAD_CURSOR.style.display = "none";
@@ -1092,21 +1092,28 @@ DEBUG_BIN.add("SUP / " + axes.toString());
         oldDrawEntry.apply(this, args);
     }
 
-    var gamepadViewer = document.createElement("iframe");
-    gamepadViewer.width = "750px";
-    gamepadViewer.height = "630px";
+var gamepadViewer = document.createElement("iframe");
+gamepadViewer.width = (750 * 2.5) + "px"; // 1875px
+gamepadViewer.height = (630 * 2.5) + "px"; // 1575px
 
-    gamepadViewer.style = `
+gamepadViewer.style = `
     position: fixed;
     z-index: 999;
     bottom: 0;
     left: 0;
-    scale: 0.2;
     border: 0;
-    transform: translateX(-200%) translateY(200%);
-    display: none;
+    display: block;
     opacity: 0.5;
     pointer-events: none;
-    `;
-    document.documentElement.appendChild(gamepadViewer);
+    transform-origin: bottom left;
+    /* Keep fully inside screen by shifting left and up */
+    transform: translateX(0) translateY(0);
+    max-width: 100vw;
+    max-height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+`;
+
+document.documentElement.appendChild(gamepadViewer);
+
 })();
