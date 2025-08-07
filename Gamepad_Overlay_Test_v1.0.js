@@ -483,7 +483,7 @@
 
         const newGpIdx = navigator.getGamepads().findIndex(x => x && x.connected) + 1;
         if (oldGpIdx !== newGpIdx) {
-            gamepadViewer.src = "https://gamepadviewer.com/?p=1&s=8&smeter=1" + newGpIdx;
+            gamepadViewer.src = "https://gamepadviewer.com/?p=" + newGpIdx;
             oldGpIdx = newGpIdx;
         }
 
